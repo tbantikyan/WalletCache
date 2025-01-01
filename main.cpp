@@ -1,20 +1,25 @@
-#include "include/util.hpp"
+#include "ui.hpp"
+#include "utils.hpp"
+
 #include <iostream>
+#include <unistd.h>
 
 using namespace std;
 
 int main() {
-  string user_input;
-  string info_string = "Type \"-1\" to quit.\n";
+    UI ui = UI();
+    while (true) {
+        int input = ui.start_menu();
+        switch (input) {
+        case UI::INPUT_EXIT:
+            return 0;
+        case UI::INPUT_NEW_PROFILE:
+            cout << "Creating new profile!\n";
+            break;
+        default:
+            cout << "Selected: " << input << "\n";
+        }
 
-  clear_screen();
-  cout << info_string;
-  while (user_input != "-1") {
-    cin >> user_input;
-    clear_screen();
-    cout << info_string;
-    cout << "You said: " << user_input << "\n";
-  }
-
-  return 0;
+        sleep(2);
+    }
 }

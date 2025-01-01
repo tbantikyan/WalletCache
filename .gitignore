@@ -1,4 +1,6 @@
+Testing/
 build/
+.cache
 
 # General
 .DS_Store
