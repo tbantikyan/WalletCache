@@ -16,8 +16,22 @@ file(GLOB SOURCES ${CMAKE_SOURCE_DIR}/src/*.cpp)
 # Add the executable
 add_executable(WalletCache main.cpp ${SOURCES})
 
+# Find PkgConfig (for checking modules)
+find_package(PkgConfig REQUIRED)
+
+pkg_check_modules(LIBSODIUM REQUIRED libsodium)
+
 # Include directories
-target_include_directories(WalletCache PUBLIC ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(WalletCache PUBLIC ${CMAKE_SOURCE_DIR}/include ${LIBSODIUM_INCLUDE_DIRS})
+
+# Link directories
+target_link_directories(WalletCache PUBLIC ${LIBSODIUM_LIBRARY_DIRS})
+
+# Link libraries
+target_link_libraries(WalletCache PUBLIC ${LIBSODIUM_LIBRARIES})
+
+# Compile options
+target_compile_options(WalletCache PUBLIC ${LIBSODIUM_CFLAGS_OTHER})
 
 # Subdirectories
 add_subdirectory(tests)

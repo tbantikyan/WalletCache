@@ -2,16 +2,24 @@
 #define UI_HPP
 
 #include <string>
+using namespace std;
 
 class UI {
   public:
-    static constexpr int INPUT_EXIT = -1;
-    static constexpr int INPUT_NEW_PROFILE = 0;
+    enum MenuOption {
+        OPTION_EXIT = 0,
+        OPTION_NEW_PROFILE,
+        OPTION_LOGIN,
+    };
 
-    int start_menu();
+    int start_menu(string error_msg, bool profile_exists);
+    int create_profile_menu(unsigned char *password);
 
   private:
-    inline std::string prompt_input();
+    int get_selection(int lower, int upper);
+    bool prompt_confirmation(string msg);
+    inline string prompt_input();
+    inline string prompt_input_masked();
 };
 
 #endif // UI_HPP
