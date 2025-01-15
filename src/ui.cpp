@@ -6,8 +6,7 @@
 
 using namespace std;
 
-int UI::start_menu(string error_msg, bool profile_exists) {
-start_menu_start:
+UI::MenuOption UI::start_menu(string error_msg, bool profile_exists) {
     clear_screen();
     cout << error_msg;
     cout << "Welcome to WalletCache\n\n";
@@ -18,53 +17,26 @@ start_menu_start:
         cout << "  (2): LOGIN TO EXISTING PROFILE\n";
     }
 
-    int input = get_selection(0, profile_exists ? 2 : 1);
-    if (profile_exists && input == OPTION_NEW_PROFILE) {
-        string msg = "Are you sure you want to create a new profile? This will "
-                     "replace the existing profile.\n";
-        if (!this->prompt_confirmation(msg)) {
-            goto start_menu_start;
-        }
-    }
-    return input;
+    return (UI::MenuOption)get_selection(0, profile_exists ? 2 : 1);
 }
 
-int UI::create_profile_menu(unsigned char *password) {
-    string input_password;
-    string error_msg;
-    int valid_password;
-    do {
-        clear_screen();
+void UI::create_profile_menu(string error_msg, string &password, string &confirm_password) {
+    clear_screen();
 
-        cout << error_msg;
-        cout << "Enter a master password\n";
-        input_password = this->prompt_input_masked();
-        cout << "Confirm master password\n";
-        string input_confirm = this->prompt_input_masked();
+    cout << error_msg;
+    cout << "Enter a master password\n";
+    password = this->prompt_input_masked();
+    cout << "Confirm master password\n";
+    confirm_password = this->prompt_input_masked();
+}
 
-        valid_password = verify_new_password(input_password, input_confirm);
-        input_confirm.clear();
-        switch (valid_password) {
-        case PASS_TOO_SHORT:
-            error_msg = "Password should be at least " +
-                        to_string(MIN_PASSWORD_LENGTH) + " characters long.\n";
-            break;
-        case PASS_TOO_LONG:
-            error_msg = "Password should be at most " +
-                        to_string(MAX_PASSWORD_LENGTH) + " characters long.\n";
-            break;
-        case PASS_NO_MATCH:
-            error_msg = "Passwords do not match.\n";
-            break;
-        default:
-            break;
-        }
-    } while (valid_password != 0);
+bool UI::prompt_confirmation(string msg) {
+    cout << "\n";
+    cout << msg;
+    cout << "(  0) Cancel\n";
+    cout << "(  1) Confirm\n";
 
-    memcpy(password, input_password.c_str(), input_password.size());
-    password[input_password.size()] = '\0';
-    input_password.clear();
-    return 0;
+    return this->get_selection(0, 1) == 1;
 }
 
 int UI::get_selection(int lower, int upper) {
@@ -81,15 +53,6 @@ int UI::get_selection(int lower, int upper) {
     } while (!valid_input);
 
     return stoi(input_string);
-}
-
-bool UI::prompt_confirmation(string msg) {
-    cout << "\n";
-    cout << msg;
-    cout << "(  0) Cancel\n";
-    cout << "(  1) Confirm\n";
-
-    return get_selection(0, 1) == 1;
 }
 
 string UI::prompt_input() {

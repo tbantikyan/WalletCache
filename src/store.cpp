@@ -14,6 +14,8 @@ int Store::init_new_store(unsigned char *password) {
     if (this->write_header(hash, salt) != 0) {
         return -1;
     }
+    memzero(hash, HASH_LEN);
+
     return 0;
 }
 
@@ -25,6 +27,22 @@ bool Store::data_exists() {
     
     return check_file_exists(data_path);
 }
+
+int Store::delete_data() {
+    if (!this->data_exists()) {
+        return -1;
+    }
+
+    string data_path;
+    if (this->get_data_path(data_path) != 0) {
+        return -1;
+    }
+
+    if (!std::filesystem::remove(data_path)) {
+        return -1;
+    }
+    return 0;
+} 
 
 int Store::write_header(const unsigned char *hash, const unsigned char *salt) {
     string data_path;
@@ -44,9 +62,11 @@ int Store::write_header(const unsigned char *hash, const unsigned char *salt) {
     this->out_stream.write((char *)hash, HASH_LEN);
     this->out_stream.write((char *)salt, SALT_LEN);
     if (this->out_stream.tellp() != (HASH_LEN + SALT_LEN)) {
+        this->out_stream.close();
         return -1;
     }
 
+    this->out_stream.close();
     return 0;
 }
 

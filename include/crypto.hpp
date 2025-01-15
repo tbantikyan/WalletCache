@@ -7,6 +7,8 @@
 #define HASH_LEN (crypto_pwhash_STRBYTES)
 #define SALT_LEN (crypto_pwhash_SALTBYTES)
 
-int hash_password(const unsigned char *hash, const unsigned char *password);
-void generate_salt(const unsigned char *salt);
+int init_crypto();
+int hash_password(unsigned char *hash, const unsigned char *password);
+void generate_salt(unsigned char *salt);
+void memzero(void *const ptr, const size_t len);
 #endif // CRYPTO_HPP

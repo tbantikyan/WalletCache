@@ -10,6 +10,7 @@ class Store {
   public:
     int init_new_store(unsigned char *password);
     bool data_exists();
+    int delete_data();
 
   private:
     const string DATA_FILE_NAME = "WalletCache.data";
