@@ -11,10 +11,13 @@ class UI {
         OPTION_NEW_PROFILE,
         OPTION_LOGIN,
     };
-
+    
     MenuOption start_menu(string error_msg, bool profile_exists);
     void create_profile_menu(string error_msg, string &password, string &confirm_password);
-    int prompt_login(unsigned char *password);
+
+    void display_hashing();
+
+    void prompt_login(string &password);
     bool prompt_confirmation(string msg);
 
   private:

@@ -24,10 +24,21 @@ void UI::create_profile_menu(string error_msg, string &password, string &confirm
     clear_screen();
 
     cout << error_msg;
-    cout << "Enter a master password\n";
+    cout << "Enter a master password:\n";
     password = this->prompt_input_masked();
-    cout << "Confirm master password\n";
+    cout << "Confirm master password:\n";
     confirm_password = this->prompt_input_masked();
+}
+
+void UI::display_hashing() {
+    cout << "\nHashing...\n";
+}
+
+void UI::prompt_login(string &password) {
+    clear_screen();
+
+    cout << "Enter profile password:\n";
+    password = this->prompt_input_masked();
 }
 
 bool UI::prompt_confirmation(string msg) {
