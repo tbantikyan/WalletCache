@@ -13,9 +13,7 @@
 
 using namespace std;
 
-bool check_file_exists(string path) {
-    return filesystem::exists(path);
-}
+bool check_file_exists(string path) { return filesystem::exists(path); }
 
 void clear_screen() {
 #if defined _WIN32
@@ -81,13 +79,4 @@ string get_file_path(string dir, string file_name) {
 #endif
 
     return path;
-}
-
-bool validate_input_int(string input, int lower, int upper) {
-    try {
-        int input_int = stoi(input);
-        return (input_int >= lower && input_int <= upper);
-    } catch (...) {
-        return false;
-    }
 }

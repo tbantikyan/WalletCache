@@ -15,6 +15,4 @@ string get_home_path();
 
 string get_file_path(string dir, string file_name);
 
-bool validate_input_int(string input, int lower, int upper);
-
 #endif // UTILS_HPP

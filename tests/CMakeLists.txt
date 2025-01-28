@@ -21,5 +21,4 @@ function(config_test test_name test_source source_name)
     gtest_discover_tests(${test_name})
 endfunction()
 
-config_test(utils_test utils_test.cpp utils.cpp)
 config_test(verification_test verification_test.cpp verification.cpp)

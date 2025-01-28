@@ -1,3 +1,4 @@
+#include "creditcard.hpp"
 #include "crypto.hpp"
 #include "store.hpp"
 #include "ui.hpp"
@@ -7,8 +8,8 @@
 
 using namespace std;
 
-int check_profile_replacement(UI ui, bool profile_exists, UI::MenuOption input) {
-    if (profile_exists && input == UI::OPTION_NEW_PROFILE) {
+int check_profile_replacement(UI ui, bool profile_exists, UI::StartMenuOption input) {
+    if (profile_exists && input == UI::OPT_START_NEW_PROFILE) {
         string msg = "Are you sure you want to create a new profile? This will "
                      "replace the existing profile.\n";
         if (!ui.prompt_confirmation(msg)) {
@@ -50,7 +51,7 @@ void handle_password_setup(UI &ui, unsigned char *password) {
 
 int handle_new_profile(Store &store, UI &ui, bool profile_exists) {
     if (profile_exists) {
-        store.delete_data();
+        store.delete_store(false);
     }
 
     unsigned char password[MAX_PASSWORD_LENGTH + 1];
@@ -62,13 +63,93 @@ int handle_new_profile(Store &store, UI &ui, bool profile_exists) {
     return res;
 }
 
-int handle_login(Store &store, UI &ui) {
+Store::LoadStoreStatus handle_login(Store &store, UI &ui) {
     string input_password;
     ui.prompt_login(input_password);
 
     unsigned char password[MAX_PASSWORD_LENGTH + 1];
     secure_cpy_str_to_buf(input_password, password);
     return store.load_store(password);
+}
+
+int handle_cards_list(Store &store, UI &ui) {
+    string cards_string = store.cards_display_string();
+    ui.cards_list(cards_string);
+    return 0;
+}
+
+int handle_card_add(Store &store, UI &ui) {
+    CreditCard *card = (CreditCard *)calloc(1, sizeof(CreditCard));
+
+    string card_name;
+    string error_msg = "";
+    while (true) {
+        ui.prompt_card_name(error_msg, card_name);
+        if (card_name == "0") {
+            return 1;
+        }
+        if (card->set_name(card_name) != 0) {
+            error_msg = "ERR: Name should contain only letters and numbers!\n";
+        } else {
+            break;
+        }
+    }
+
+    string card_number;
+    error_msg = "";
+    while (true) {
+        ui.prompt_card_number(error_msg, card_number);
+        if (card_number == "0") {
+            return 1;
+        }
+        if (card->set_card_number(card_number) != 0) {
+            error_msg = "ERR: Invalid card number!\n";
+        } else {
+            break;
+        }
+    }
+
+    string card_cvv;
+    error_msg = "";
+    while (true) {
+        ui.prompt_card_cvv(error_msg, card_cvv);
+        if (card_cvv == "0") {
+            return 1;
+        }
+        if (card->set_cvv(card_cvv) != 0) {
+            error_msg = "ERR: Invalid card cvv!\n";
+        } else {
+            break;
+        }
+    }
+
+    string card_month;
+    error_msg = "";
+    while (true) {
+        ui.prompt_card_month(error_msg, card_month);
+        if (card_month == "0") {
+            return 1;
+        }
+        if (card->set_month(card_month) != 0) {
+            error_msg = "ERR: Invalid card month!\n";
+        } else {
+            break;
+        }
+    }
+
+    string card_year;
+    error_msg = "";
+    while (true) {
+        ui.prompt_card_year(error_msg, card_year);
+        if (card->set_year(card_year) != 0) {
+            error_msg = "ERR: Invalid card year!\n";
+        } else {
+            break;
+        }
+    }
+
+    store.add_card(card);
+    return 0;
 }
 
 int main() {
@@ -83,38 +164,81 @@ int main() {
     bool logged_in = false;
     string status_msg;
     while (!logged_in) {
-        bool profile_exists = store.data_exists();
+        bool profile_exists = store.store_exists(false);
 
-        UI::MenuOption selection = ui.start_menu(status_msg, profile_exists);
+        UI::StartMenuOption selection = ui.start_menu(status_msg, profile_exists);
         if (check_profile_replacement(ui, profile_exists, selection) != 0) {
             continue;
         }
 
         switch (selection) {
-        case UI::OPTION_EXIT:
+        case UI::OPT_START_EXIT:
             return 0;
-        case UI::OPTION_NEW_PROFILE:
+        case UI::OPT_START_NEW_PROFILE:
             if (handle_new_profile(store, ui, profile_exists) != 0) {
                 status_msg = "ERR: Failed to initialize store for new profile\n";
             } else {
                 status_msg = "Successfully created new profile!\n";
             }
             break;
-        case UI::OPTION_LOGIN:
+        case UI::OPT_START_LOGIN:
             switch (handle_login(store, ui)) {
             case Store::LOAD_STORE_VALID:
                 logged_in = true;
                 break;
-            case Store::DATA_READ_ERROR:
+            case Store::LOAD_STORE_OPEN_ERR:
+                status_msg = "ERR: Login failed. Unable to load data file.\n";
+                break;
+            case Store::LOAD_STORE_HEADER_READ_ERR:
                 status_msg = "ERR: Login failed. Unable to read data file.\n";
                 break;
-            case Store::PWD_VERIFY_ERR:
+            case Store::LOAD_STORE_PWD_VERIFY_ERR:
                 status_msg = "ERR: Login failed. Please ensure password is correct.\n";
                 break;
-            case Store::KEY_DERIVATION_ERROR:
+            case Store::LOAD_STORE_KEY_DERIVATION_ERR:
                 status_msg = "ERR: Failed to derive encryption key.\n";
                 break;
+            case Store::LOAD_STORE_DATA_READ_ERR:
+                status_msg = "ERR: Failed to read data file.\n";
+                break;
+            case Store::LOAD_STORE_DATA_DECRYPT_ERR:
+                status_msg = "ERR: Failed to decrypt data.\n";
+                break;
             }
+            break;
+        }
+    }
+
+    status_msg = "";
+    while (true) {
+        UI::ProfileMenuOption selection = ui.profile_menu(status_msg);
+        switch (selection) {
+        case UI::OPT_PROFILE_EXIT:
+            return 0;
+        case UI::OPT_PROFILE_LIST:
+            handle_cards_list(store, ui);
+            break;
+        case UI::OPT_PROFILE_ADD:
+            handle_card_add(store, ui);
+            switch (store.save_store()) {
+            case Store::SAVE_STORE_VALID:
+                status_msg = "New card added successfully!\n";
+                break;
+            case Store::SAVE_STORE_OPEN_ERR:
+                status_msg = "Failed to open new file\n";
+                break;
+            case Store::SAVE_STORE_HEADER_ERR:
+                status_msg = "Failed to write new header!\n";
+            case Store::SAVE_STORE_WRITE_DATA_ERR:
+                status_msg = "Failed to write new data\n";
+                break;
+            case Store::SAVE_STORE_COMMIT_TEMP_ERR:
+                status_msg = "Failed to commit new data\n";
+                break;
+            }
+
+            break;
+        case UI::OPT_PROFILE_DEL:
             break;
         }
     }
