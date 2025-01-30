@@ -3,24 +3,24 @@
 #include <gtest/gtest.h>
 
 // validate_credit_card_number
-TEST(VerificationTest, validate_credit_card_number_emptyString_False) {
+TEST(VerificationTest, validate_credit_card_number_EmptyString_False) {
     ASSERT_FALSE(validate_credit_card_number(""));
 }
 
-TEST(VerificationTest, validate_credit_card_number_smallNumber_False) {
+TEST(VerificationTest, validate_credit_card_number_SmallNumber_False) {
     ASSERT_FALSE(validate_credit_card_number("234"));
 }
 
-TEST(VerificationTest, validate_credit_card_number_invalidCardNumber_False) {
+TEST(VerificationTest, validate_credit_card_number_InvalidCardNumber_False) {
     ASSERT_FALSE(validate_credit_card_number("1234123412341234"));
 }
 
-TEST(VerificationTest, validate_credit_card_number_validCardNumber_True) {
+TEST(VerificationTest, validate_credit_card_number_ValidCardNumber_True) {
     ASSERT_TRUE(validate_credit_card_number("5309024080252296"));
 }
 
 // validate_input_alnum_only
-TEST(VerificationTest, validate_input_alnum_only_emptyString_False) {
+TEST(VerificationTest, validate_input_alnum_only_EmptyString_False) {
     ASSERT_FALSE(validate_input_digits_only(""));
 }
 
@@ -49,7 +49,7 @@ TEST(VerificationTest, validate_input_alnum_only_LettersAndSymbols_False) {
 }
 
 // validate_input_digits_only
-TEST(VerificationTest, validate_input_digits_only_emptyString_False) {
+TEST(VerificationTest, validate_input_digits_only_EmptyString_False) {
     ASSERT_FALSE(validate_input_digits_only(""));
 }
 

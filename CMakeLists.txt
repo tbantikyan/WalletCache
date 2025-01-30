@@ -1,37 +1,39 @@
-# Minimum CMake version
 cmake_minimum_required(VERSION 3.31)
-
-# Project name and settings
 project(WalletCache VERSION 1.0 LANGUAGES CXX)
 
-# Specify C++ standard
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 enable_testing()
 
-# Automatically gather all .cpp files in the src directory
+# Create a library instead of putting everything in the executable
 file(GLOB SOURCES ${CMAKE_SOURCE_DIR}/src/*.cpp)
 
-# Add the executable
-add_executable(WalletCache main.cpp ${SOURCES})
+add_library(WalletCacheLib STATIC ${SOURCES})  # Core functionality as library
 
-# Find PkgConfig (for checking modules)
+# Main executable
+add_executable(WalletCache main.cpp)
+target_link_libraries(WalletCache PRIVATE WalletCacheLib)
+
+# Dependencies for both library and executable
 find_package(PkgConfig REQUIRED)
-
 pkg_check_modules(LIBSODIUM REQUIRED libsodium)
 
-# Include directories
-target_include_directories(WalletCache PUBLIC ${CMAKE_SOURCE_DIR}/include ${LIBSODIUM_INCLUDE_DIRS})
+target_include_directories(WalletCacheLib PUBLIC
+    ${CMAKE_SOURCE_DIR}/include
+    ${LIBSODIUM_INCLUDE_DIRS}
+)
 
-# Link directories
-target_link_directories(WalletCache PUBLIC ${LIBSODIUM_LIBRARY_DIRS})
+target_link_directories(WalletCacheLib PUBLIC 
+    ${LIBSODIUM_LIBRARY_DIRS}
+)
 
-# Link libraries
-target_link_libraries(WalletCache PUBLIC ${LIBSODIUM_LIBRARIES})
+target_link_libraries(WalletCacheLib PUBLIC
+    ${LIBSODIUM_LIBRARIES}
+)
 
-# Compile options
-target_compile_options(WalletCache PUBLIC ${LIBSODIUM_CFLAGS_OTHER})
+target_compile_options(WalletCacheLib PUBLIC
+    ${LIBSODIUM_CFLAGS_OTHER}
+)
 
-# Subdirectories
 add_subdirectory(tests)

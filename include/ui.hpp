@@ -5,6 +5,8 @@
 using namespace std;
 
 class UI {
+  friend class UITest;
+
   public:
     enum StartMenuOption {
         OPT_START_EXIT = 0,
