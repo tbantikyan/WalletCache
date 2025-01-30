@@ -25,5 +25,6 @@ function(config_test test_name test_source)
 endfunction()
 
 # Create test - no need to specify implementation files
+config_test(creditcard_test creditcard_test.cpp)
 config_test(verification_test verification_test.cpp)
 config_test(ui_test ui_test.cpp)

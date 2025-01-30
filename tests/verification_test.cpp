@@ -17,6 +17,7 @@ TEST(VerificationTest, validate_credit_card_number_InvalidCardNumber_False) {
 
 TEST(VerificationTest, validate_credit_card_number_ValidCardNumber_True) {
     ASSERT_TRUE(validate_credit_card_number("5309024080252296"));
+    ASSERT_TRUE(validate_credit_card_number("344218402904125"));
 }
 
 // validate_input_alnum_only

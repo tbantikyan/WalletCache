@@ -3,7 +3,7 @@
 
 bool validate_credit_card_number(string number) {
     int length = number.size();
-    if (length != 16) {
+    if (length != 15 && length != 16) {
         return false;
     }
 

@@ -5,7 +5,7 @@
 using namespace std;
 
 class UI {
-  friend class UITest;
+    friend class UITest;
 
   public:
     enum StartMenuOption {

@@ -6,6 +6,8 @@
 using namespace std;
 
 class CreditCard {
+    friend class CreditCardTest;
+
   public:
     int set_name(string name);
     int set_card_number(string card_number);
@@ -16,7 +18,7 @@ class CreditCard {
     string get_name();
 
     string format_text();
-    void init_from_text(char* text);
+    void init_from_text(char *text);
 
   private:
     enum CardNetwork {

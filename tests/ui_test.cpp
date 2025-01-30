@@ -19,7 +19,7 @@ class UITest : public ::testing::Test {
     }
 
     int TEST_get_selection(UI &ui, int lower, int upper) {
-        return ui.get_selection(lower, upper); // Access via UITest (friend)
+        return ui.get_selection(lower, upper); // Access via friend
     }
 
     stringstream input_stream;  // Simulates user input
@@ -129,7 +129,7 @@ TEST_F(UITest, create_profile_menu_MatchingPassword_DisplaysMessages) {
     string error_msg;
     string password;
     string confirm_password;
-    input_stream << "testpass\ntestpass\n"; // Simulate password entry
+    input_stream << "testpass\ntestpass\n"; 
 
     ui.create_profile_menu(error_msg, password, confirm_password);
 
@@ -147,7 +147,7 @@ TEST_F(UITest, create_profile_menu_DifferentPassword_DisplaysMessages) {
     string error_msg;
     string password;
     string confirm_password;
-    input_stream << "testpass\ndiffpass\n"; // Simulate password entry
+    input_stream << "testpass\ndiffpass\n"; 
 
     ui.create_profile_menu(error_msg, password, confirm_password);
 
@@ -248,7 +248,6 @@ TEST_F(UITest, dispay_hashing_ShowsCorrectMessage) {
     UI ui;
     ui.display_hashing();
 
-    // Verify exact message formatting
     EXPECT_EQ(output_stream.str(), "\nHashing...\n");
 }
 
@@ -422,7 +421,7 @@ TEST_F(UITest, prompt_card_year_InputYear) {
     UI ui;
     string error_msg = "";
     string year;
-    input_stream << "1000\n"; // Simulate user entry
+    input_stream << "1000\n"; 
 
     ui.prompt_card_year(error_msg, year);
 
@@ -434,7 +433,7 @@ TEST_F(UITest, prompt_card_year_InputEmptyYear) {
     UI ui;
     string error_msg = "";
     string year;
-    input_stream << "\n"; // Simulate user entry
+    input_stream << "\n"; 
 
     ui.prompt_card_year(error_msg, year);
 
@@ -446,7 +445,7 @@ TEST_F(UITest, prompt_card_year_InputWithErrorMessage) {
     UI ui;
     string error_msg = "ERR: Test Error!";
     string year;
-    input_stream << "1000\n"; // Simulate user entry
+    input_stream << "1000\n"; 
 
     ui.prompt_card_year(error_msg, year);
 
@@ -460,7 +459,7 @@ TEST_F(UITest, prompt_card_year_InputWithErrorMessage) {
 TEST_F(UITest, prompt_login_InputPassword) {
     UI ui;
     string password;
-    input_stream << "s3cr3tP@ss\n"; // Simulate password entry
+    input_stream << "s3cr3tP@ss\n"; 
 
     ui.prompt_login(password);
 
@@ -474,7 +473,7 @@ TEST_F(UITest, prompt_login_InputPassword) {
 TEST_F(UITest, prompt_login_EmptyPassword) {
     UI ui;
     string password;
-    input_stream << "\n"; // Simulate empty password entry
+    input_stream << "\n"; 
 
     ui.prompt_login(password);
 
@@ -488,110 +487,75 @@ TEST_F(UITest, prompt_confirmation_Outputs) {
 
     input_stream << "1\n";
 
-    // Call the function
     bool result = ui.prompt_confirmation("Do you want to proceed?");
 
-    // Check the result
     EXPECT_TRUE(result);
 
-    // Check the output
     string output = output_stream.str();
-    EXPECT_TRUE(output.find("Do you want to proceed?") != string::npos); // Check if message was displayed
-    EXPECT_TRUE(output.find("(  0) Cancel") != string::npos);            // Check if options were displayed
-    EXPECT_TRUE(output.find("(  1) Confirm") != string::npos);           // Check if options were displayed
+    EXPECT_TRUE(output.find("Do you want to proceed?") != string::npos); 
+    EXPECT_TRUE(output.find("(  0) Cancel") != string::npos);             
+    EXPECT_TRUE(output.find("(  1) Confirm") != string::npos);
 }
 
 // get_selection
 TEST_F(UITest, get_selection_LowerBoundary) {
     UI ui;
-
-    // Simulate boundary input
     input_stream << "0\n";
 
-    // Call the function
     int result = TEST_get_selection(ui, 0, 1);
 
-    // Check the result
     EXPECT_EQ(result, 0);
 }
 
 TEST_F(UITest, get_selection_UpperBoundary) {
     UI ui;
-
-    // Simulate boundary input
     input_stream << "1\n";
 
-    // Call the function
     int result = TEST_get_selection(ui, 0, 1);
 
-    // Check the result
     EXPECT_EQ(result, 1);
 }
 
 TEST_F(UITest, get_selection_InvalidNumericInput) {
     UI ui;
-
-    // Simulate empty input followed by valid input
     input_stream << "3\n1\n";
 
-    // Call the function
     int result = TEST_get_selection(ui, 0, 1);
 
-    // Check the result
     EXPECT_EQ(result, 1);
-
-    // Check the output
     EXPECT_TRUE(output_stream.str().find("Please input a number corresponding to available options.") !=
-                string::npos); // Check if error message was displayed
+                string::npos); 
 }
 
 TEST_F(UITest, get_selection_InvalidNegativeNumericInput) {
     UI ui;
-
-    // Simulate empty input followed by valid input
     input_stream << "-3\n1\n";
 
-    // Call the function
     int result = TEST_get_selection(ui, 0, 1);
 
-    // Check the result
     EXPECT_EQ(result, 1);
-
-    // Check the output
     EXPECT_TRUE(output_stream.str().find("Please input a number corresponding to available options.") !=
-                string::npos); // Check if error message was displayed
+                string::npos);
 }
 
 TEST_F(UITest, get_selection_InvalidTextInput) {
     UI ui;
-
-    // Simulate empty input followed by valid input
     input_stream << "abcabc\n1\n";
 
-    // Call the function
     int result = TEST_get_selection(ui, 0, 1);
 
-    // Check the result
     EXPECT_EQ(result, 1);
-
-    // Check the output
     EXPECT_TRUE(output_stream.str().find("Please input a number corresponding to available options.") !=
-                string::npos); // Check if error message was displayed
+                string::npos); 
 }
 
 TEST_F(UITest, get_selection_EmptyInput) {
     UI ui;
-
-    // Simulate empty input followed by valid input
     input_stream << "\n1\n";
 
-    // Call the function
     int result = TEST_get_selection(ui, 0, 1);
 
-    // Check the result
     EXPECT_EQ(result, 1);
-
-    // Check the output
     EXPECT_TRUE(output_stream.str().find("Please input a number corresponding to available options.") !=
-                string::npos); // Check if error message was displayed
+                string::npos); 
 }
