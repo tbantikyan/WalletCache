@@ -3,16 +3,14 @@
 
 #include <string>
 
-using namespace std;
-
-bool CheckFileExists(string path);
+auto CheckFileExists(const std::string &path) -> bool;
 
 void ClearScreen();
 
 void EnableStdinEcho(bool enabled);
 
-string GetHomePath();
+auto GetHomePath() -> std::string;
 
-string GetFilePath(string dir, string file_name);
+auto GetFilePath(const std::string &dir, const std::string &file_name) -> std::string;
 
 #endif // UTILS_HPP

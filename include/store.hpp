@@ -7,8 +7,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 class Store {
   public:
     enum LoadStoreStatus {
@@ -30,43 +28,43 @@ class Store {
 
     ~Store();
 
-    int InitNewStore(unsigned char *password);
-    LoadStoreStatus LoadStore(unsigned char *password);
-    SaveStoreStatus SaveStore();
+    auto InitNewStore(unsigned char *password) -> int;
+    auto LoadStore(unsigned char *password) -> LoadStoreStatus;
+    auto SaveStore() -> SaveStoreStatus;
     void AddCard(CreditCard *card);
 
-    bool StoreExists(bool is_tmp);
-    int DeleteStore(bool is_tmp);
+    auto StoreExists(bool is_tmp) -> bool;
+    auto DeleteStore(bool is_tmp) -> int;
 
-    string CardsDisplayString();
+    auto CardsDisplayString() -> std::string;
 
   private:
-    vector<struct CreditCard *> cards_;
+    std::vector<struct CreditCard *> cards_;
 
     unsigned char hashed_password_[HASH_LEN];
     unsigned char salt_[SALT_LEN];
     unsigned char encryption_key_[ENCYRPTION_KEY_LEN];
 
-    const string STORE_FILE_NAME_ = "WalletCache.store";
-    const string TMP_STORE_FILE_NAME_ = "WalletCache.store.tmp";
+    const std::string store_file_name_ = "WalletCache.store";
+    const std::string tmp_store_file_name_ = "WalletCache.store.tmp";
 
-    ifstream in_stream_;
-    ofstream out_stream_;
+    std::ifstream in_stream_;
+    std::ofstream out_stream_;
 
-    int ReadHeader(unsigned char *hash, unsigned char *salt);
-    int ReadData(unsigned char *decrypted_data, uintmax_t data_size, unsigned long long *decrypted_size_actual);
-    int WriteHeader(const unsigned char *hash, const unsigned char *salt);
-    int WriteData(unsigned char *data, uintmax_t data_size);
+    auto ReadHeader(unsigned char *hash, unsigned char *salt) -> int;
+    auto ReadData(unsigned char *decrypted_data, uintmax_t data_size, uint64_t *decrypted_size_actual) -> int;
+    auto WriteHeader(const unsigned char *hash, const unsigned char *salt) -> int;
+    auto WriteData(unsigned char *data, uintmax_t data_size) -> int;
 
-    uintmax_t GetCardsSize();
-    uintmax_t CardsFormatted(unsigned char *buf);
+    auto GetCardsSize() -> uintmax_t;
+    auto CardsFormatted(unsigned char *buf) -> uintmax_t;
     void LoadCards(unsigned char *data);
 
-    uintmax_t GetStoreSize(bool is_tmp);
-    int OpenStoreIn(bool is_tmp);
-    int OpenStoreOut(bool is_tmp);
-    int GetStorePath(string &path, bool is_tmp);
-    int CommitTemp();
+    auto GetStoreSize(bool is_tmp) -> uintmax_t;
+    auto OpenStoreIn(bool is_tmp) -> int;
+    auto OpenStoreOut(bool is_tmp) -> int;
+    auto GetStorePath(std::string &path, bool is_tmp) -> int;
+    auto CommitTemp() -> int;
 };
 
 #endif // STORE_HPP

@@ -2,7 +2,6 @@
 #define UI_HPP
 
 #include <string>
-using namespace std;
 
 class UI {
     friend class UITest;
@@ -20,25 +19,25 @@ class UI {
         OPT_PROFILE_DEL,
     };
 
-    StartMenuOption StartMenu(string error_msg, bool profile_exists);
-    void CreateProfileMenu(string error_msg, string &password, string &confirm_password);
-    ProfileMenuOption ProfileMenu(string error_msg);
-    void CardsList(string cards_string);
+    auto StartMenu(const std::string &status_msg, bool profile_exists) -> StartMenuOption;
+    void CreateProfileMenu(const std::string &status_msg, std::string &password, std::string &confirm_password);
+    auto ProfileMenu(const std::string &status_msg) -> ProfileMenuOption;
+    void CardsList(const std::string &cards_string);
 
     void DisplayHashing();
 
-    void PromptCardCvv(string error_msg, string &cvv);
-    void PromptCardMonth(string error_msg, string &month);
-    void PromptCardName(string error_msg, string &card_name);
-    void PromptCardNumber(string error_msg, string &card_number);
-    void PromptCardYear(string error_msg, string &year);
-    void PromptLogin(string &password);
-    bool PromptConfirmation(string msg);
+    void PromptCardCvv(const std::string &status_msg, std::string &cvv);
+    void PromptCardMonth(const std::string &status_msg, std::string &month);
+    void PromptCardName(const std::string &status_msg, std::string &card_name);
+    void PromptCardNumber(const std::string &status_msg, std::string &card_number);
+    void PromptCardYear(const std::string &status_msg, std::string &year);
+    void PromptLogin(std::string &password);
+    auto PromptConfirmation(const std::string &msg) -> bool;
 
   private:
-    int GetSelection(int lower, int upper);
-    inline string PromptInput();
-    inline string PromptInputMasked();
+    auto GetSelection(int lower, int upper) -> int;
+    inline auto PromptInput() -> std::string;
+    inline auto PromptInputMasked() -> std::string;
 };
 
 #endif // UI_HPP

@@ -2,8 +2,8 @@
 #define CRYPTO_HPP
 
 #include <_types/_uintmax_t.h>
+#include <cstdlib>
 #include <sodium.h>
-#include <stdlib.h>
 #include <string>
 
 #define ENCRYPTION_ADDED_BYTES (crypto_secretstream_xchacha20poly1305_ABYTES)
@@ -15,19 +15,20 @@
 #define MEM_LIMIT (crypto_pwhash_MEMLIMIT_SENSITIVE)
 #define SALT_LEN (crypto_pwhash_SALTBYTES)
 
-int InitCrypto();
+auto InitCrypto() -> int;
 
-int DeriveEncryptionKey(unsigned char *key, size_t key_len, const unsigned char *password, const unsigned char *salt);
-int EncryptBuf(unsigned char *out_data, unsigned char *header, const unsigned char *buf, uintmax_t buf_len,
-               const unsigned char *key);
-int HashPassword(unsigned char *hash, const unsigned char *password);
+auto DeriveEncryptionKey(unsigned char *key, size_t key_len, const unsigned char *password, const unsigned char *salt)
+    -> int;
+auto EncryptBuf(unsigned char *out_data, unsigned char *header, const unsigned char *buf, uintmax_t buf_len,
+                const unsigned char *key) -> int;
+auto HashPassword(unsigned char *hash, const unsigned char *password) -> int;
 void GenerateSalt(unsigned char *salt);
 
-int DecryptBuf(unsigned char *out_data, unsigned long long *out_len, unsigned char *header,
-               unsigned char *encrypted_buf, uintmax_t buf_len, const unsigned char *key);
-int VerifyPasswordHash(unsigned char *hash, const unsigned char *password);
+auto DecryptBuf(unsigned char *out_data, uint64_t *out_len, unsigned char *header, unsigned char *encrypted_buf,
+                uintmax_t buf_len, const unsigned char *key) -> int;
+auto VerifyPasswordHash(const unsigned char *hash, const unsigned char *password) -> int;
 
-void Memzero(void *const ptr, const size_t len);
+void Memzero(void *ptr, size_t len);
 void SecureCpyStrToBuf(std::string &str, unsigned char *buf);
 
 #endif // CRYPTO_HPP

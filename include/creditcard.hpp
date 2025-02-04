@@ -3,21 +3,19 @@
 
 #include <string>
 
-using namespace std;
-
 class CreditCard {
     friend class CreditCardTest;
 
   public:
-    int SetName(string name);
-    int SetCardNumber(string card_number);
-    int SetCvv(string cvv);
-    int SetMonth(string month);
-    int SetYear(string year);
+    auto SetName(const std::string &name) -> int;
+    auto SetCardNumber(const std::string &card_number) -> int;
+    auto SetCvv(const std::string &cvv) -> int;
+    auto SetMonth(const std::string &month) -> int;
+    auto SetYear(const std::string &year) -> int;
 
-    string GetName();
+    auto GetName() -> std::string;
 
-    string FormatText();
+    auto FormatText() -> std::string;
     void InitFromText(char *text);
 
   private:
@@ -29,17 +27,17 @@ class CreditCard {
         CARD_DISCOVER,
     };
 
-    string card_number_;
-    string cvv_;
-    string month_;
-    string year_;
+    std::string card_number_;
+    std::string cvv_;
+    std::string month_;
+    std::string year_;
     CardNetwork network_;
 
-    string name_;
-    string default_name_;
+    std::string name_;
+    std::string default_name_;
 
     void DetermineNetwork();
-    string GetNetworkString();
+    auto GetNetworkString() -> std::string;
 };
 
 #endif // CREDITCARD_HPP

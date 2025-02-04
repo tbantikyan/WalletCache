@@ -69,49 +69,49 @@ TEST(VerificationTest, ValidateInputInRange_WordExpectingZeroToOne_False) {
 
 // ValidateNewPassword
 TEST(VerificationTest, ValidateNewPassword_MatchingPasswords_Zero) {
-    string str1(MIN_PASSWORD_LENGTH, 'A');
-    string str2(MIN_PASSWORD_LENGTH, 'A');
+    std::string str1(MIN_PASSWORD_LENGTH, 'A');
+    std::string str2(MIN_PASSWORD_LENGTH, 'A');
     ASSERT_EQ(VerifyNewPassword(str1, str2), 0);
 }
 
 TEST(VerificationTest, ValidateNewPassword_DifferentPasswords_PASS_NO_MATCH) {
-    string str1(MIN_PASSWORD_LENGTH, 'A');
-    string str2(MIN_PASSWORD_LENGTH, 'a');
+    std::string str1(MIN_PASSWORD_LENGTH, 'A');
+    std::string str2(MIN_PASSWORD_LENGTH, 'a');
     ASSERT_EQ(VerifyNewPassword(str1, str2), PASS_NO_MATCH);
 }
 
 TEST(VerificationTest, ValidateNewPassword_ShortMatchingPasswords_PASS_TOO_SHORT) {
-    string str1(MIN_PASSWORD_LENGTH - 1, 'A');
-    string str2(MIN_PASSWORD_LENGTH - 1, 'A');
+    std::string str1(MIN_PASSWORD_LENGTH - 1, 'A');
+    std::string str2(MIN_PASSWORD_LENGTH - 1, 'A');
     ASSERT_EQ(VerifyNewPassword(str1, str2), PASS_TOO_SHORT);
 }
 
 TEST(VerificationTest, ValidateNewPassword_ShortConfirmPasswords_PASS_NO_MATCH) {
-    string str1(MIN_PASSWORD_LENGTH, 'A');
-    string str2(MIN_PASSWORD_LENGTH - 1, 'A');
+    std::string str1(MIN_PASSWORD_LENGTH, 'A');
+    std::string str2(MIN_PASSWORD_LENGTH - 1, 'A');
     ASSERT_EQ(VerifyNewPassword(str1, str2), PASS_NO_MATCH);
 }
 
 TEST(VerificationTest, ValidateNewPassword_ShortPassword_PASS_TOO_SHORT) {
-    string str1(MIN_PASSWORD_LENGTH - 1, 'A');
-    string str2(MIN_PASSWORD_LENGTH, 'A');
+    std::string str1(MIN_PASSWORD_LENGTH - 1, 'A');
+    std::string str2(MIN_PASSWORD_LENGTH, 'A');
     ASSERT_EQ(VerifyNewPassword(str1, str2), PASS_TOO_SHORT);
 }
 
 TEST(VerificationTest, ValidateNewPassword_LongMatchingPasswords_PASS_TOO_LONG) {
-    string str1(MAX_PASSWORD_LENGTH + 1, 'A');
-    string str2(MAX_PASSWORD_LENGTH + 1, 'A');
+    std::string str1(MAX_PASSWORD_LENGTH + 1, 'A');
+    std::string str2(MAX_PASSWORD_LENGTH + 1, 'A');
     ASSERT_EQ(VerifyNewPassword(str1, str2), PASS_TOO_LONG);
 }
 
 TEST(VerificationTest, ValidateNewPassword_LongConfirmPasswords_PASS_NO_MATCH) {
-    string str1(MAX_PASSWORD_LENGTH, 'A');
-    string str2(MAX_PASSWORD_LENGTH + 1, 'A');
+    std::string str1(MAX_PASSWORD_LENGTH, 'A');
+    std::string str2(MAX_PASSWORD_LENGTH + 1, 'A');
     ASSERT_EQ(VerifyNewPassword(str1, str2), PASS_NO_MATCH);
 }
 
 TEST(VerificationTest, ValidateNewPassword_LongPassword_PASS_TOO_LONG) {
-    string str1(MAX_PASSWORD_LENGTH + 1, 'A');
-    string str2(MAX_PASSWORD_LENGTH, 'A');
+    std::string str1(MAX_PASSWORD_LENGTH + 1, 'A');
+    std::string str2(MAX_PASSWORD_LENGTH, 'A');
     ASSERT_EQ(VerifyNewPassword(str1, str2), PASS_TOO_LONG);
 }

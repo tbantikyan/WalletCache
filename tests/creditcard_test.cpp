@@ -4,7 +4,7 @@
 
 class CreditCardTest : public ::testing::Test {
   protected:
-    string TEST_GetNetworkString(CreditCard &card) {
+    auto TestGetNetworkString(CreditCard &card) -> std::string {
         return card.GetNetworkString(); // Access via friend
     }
 };
@@ -160,35 +160,35 @@ TEST_F(CreditCardTest, InitFromText_WithoutName) {
 TEST_F(CreditCardTest, GetNetworkString_VisaCard_Visa) {
     CreditCard card;
     card.SetCardNumber("4111111111111111");
-    ASSERT_EQ(TEST_GetNetworkString(card), "Visa");
+    ASSERT_EQ(TestGetNetworkString(card), "Visa");
 }
 
 TEST_F(CreditCardTest, GetNetworkString_Mastercard2Card_Mastercard) {
     CreditCard card;
     card.SetCardNumber("2439331222445302");
-    ASSERT_EQ(TEST_GetNetworkString(card), "Mastercard");
+    ASSERT_EQ(TestGetNetworkString(card), "Mastercard");
 }
 
 TEST_F(CreditCardTest, GetNetworkString_Mastercard5Card_Mastercard) {
     CreditCard card;
     card.SetCardNumber("5555555555554444");
-    ASSERT_EQ(TEST_GetNetworkString(card), "Mastercard");
+    ASSERT_EQ(TestGetNetworkString(card), "Mastercard");
 }
 
 TEST_F(CreditCardTest, GetNetworkString_AmexCard_AmericanExpress) {
     CreditCard card;
     card.SetCardNumber("371046275845869");
-    ASSERT_EQ(TEST_GetNetworkString(card), "American Express");
+    ASSERT_EQ(TestGetNetworkString(card), "American Express");
 }
 
 TEST_F(CreditCardTest, GetNetworkString_DiscoverCard_Discover) {
     CreditCard card;
     card.SetCardNumber("6011111111111117");
-    ASSERT_EQ(TEST_GetNetworkString(card), "Discover");
+    ASSERT_EQ(TestGetNetworkString(card), "Discover");
 }
 
 TEST_F(CreditCardTest, GetNetworkString_OtherCard_Other) {
     CreditCard card;
     card.SetCardNumber("8252624630862584");
-    ASSERT_EQ(TEST_GetNetworkString(card), "Other");
+    ASSERT_EQ(TestGetNetworkString(card), "Other");
 }

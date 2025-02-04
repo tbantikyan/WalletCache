@@ -1,7 +1,7 @@
 #include "verification.hpp"
 #include <algorithm>
 
-bool ValidateCreditCardNumber(string number) {
+auto ValidateCreditCardNumber(const std::string &number) -> bool {
     int length = number.size();
     if (length != 15 && length != 16) {
         return false;
@@ -13,8 +13,9 @@ bool ValidateCreditCardNumber(string number) {
     for (int i = length - 1; i >= 0; i--) {
         int d = number[i] - '0';
 
-        if (double_digit == true)
+        if (double_digit) {
             d = d * 2;
+        }
         double_digit = !double_digit;
 
         sum += d / 10;
@@ -24,21 +25,21 @@ bool ValidateCreditCardNumber(string number) {
     return (sum % 10 == 0);
 }
 
-bool ValidateInputAlnumOnly(string input) {
-    if (input.size() == 0) {
+auto ValidateInputAlnumOnly(std::string input) -> bool {
+    if (input.empty()) {
         return false;
     }
-    return std::all_of(input.begin(), input.end(), isalnum); 
+    return std::all_of(input.begin(), input.end(), isalnum);
 }
 
-bool ValidateInputDigitsOnly(string input) {
-    if (input.size() == 0) {
+auto ValidateInputDigitsOnly(std::string input) -> bool {
+    if (input.empty()) {
         return false;
     }
-    return std::all_of(input.begin(), input.end(), ::isdigit); 
+    return std::all_of(input.begin(), input.end(), ::isdigit);
 }
 
-bool ValidateInputInRange(string input, int lower, int upper) {
+auto ValidateInputInRange(const std::string &input, int lower, int upper) -> bool {
     try {
         int input_int = stoi(input);
         return (input_int >= lower && input_int <= upper);
@@ -47,12 +48,14 @@ bool ValidateInputInRange(string input, int lower, int upper) {
     }
 }
 
-NewPasswordStatus VerifyNewPassword(string password, string confirm_password) {
+auto VerifyNewPassword(const std::string &password, const std::string &confirm_password) -> NewPasswordStatus {
     if (password.size() < MIN_PASSWORD_LENGTH) {
         return PASS_TOO_SHORT;
-    } else if (password.size() > MAX_PASSWORD_LENGTH) {
+    }
+    if (password.size() > MAX_PASSWORD_LENGTH) {
         return PASS_TOO_LONG;
-    } else if (password != confirm_password) {
+    }
+    if (password != confirm_password) {
         return PASS_NO_MATCH;
     }
     return PASS_VALID;

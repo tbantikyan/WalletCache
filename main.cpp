@@ -6,12 +6,10 @@
 
 #include <iostream>
 
-using namespace std;
-
-int check_profile_replacement(UI ui, bool profile_exists, UI::StartMenuOption input) {
+auto CheckProfileReplacement(UI ui, bool profile_exists, UI::StartMenuOption input) -> int {
     if (profile_exists && input == UI::OPT_START_NEW_PROFILE) {
-        string msg = "Are you sure you want to create a new profile? This will "
-                     "replace the existing profile.\n";
+        std::string msg = "Are you sure you want to create a new profile? This will "
+                          "replace the existing profile.\n";
         if (!ui.PromptConfirmation(msg)) {
             return -1;
         }
@@ -19,10 +17,10 @@ int check_profile_replacement(UI ui, bool profile_exists, UI::StartMenuOption in
     return 0;
 }
 
-void handle_password_setup(UI &ui, unsigned char *password) {
-    string error_msg;
-    string input_password;
-    string input_confirm;
+void HandlePasswordSetup(UI &ui, unsigned char *password) {
+    std::string error_msg;
+    std::string input_password;
+    std::string input_confirm;
 
     NewPasswordStatus valid_password;
     do {
@@ -31,10 +29,10 @@ void handle_password_setup(UI &ui, unsigned char *password) {
         valid_password = VerifyNewPassword(input_password, input_confirm);
         switch (valid_password) {
         case PASS_TOO_SHORT:
-            error_msg = "Password should be at least " + to_string(MIN_PASSWORD_LENGTH) + " characters long.\n";
+            error_msg = "Password should be at least " + std::to_string(MIN_PASSWORD_LENGTH) + " characters long.\n";
             break;
         case PASS_TOO_LONG:
-            error_msg = "Password should be at most " + to_string(MAX_PASSWORD_LENGTH) + " characters long.\n";
+            error_msg = "Password should be at most " + std::to_string(MAX_PASSWORD_LENGTH) + " characters long.\n";
             break;
         case PASS_NO_MATCH:
             error_msg = "Passwords do not match.\n";
@@ -49,13 +47,13 @@ void handle_password_setup(UI &ui, unsigned char *password) {
     input_confirm.clear();
 }
 
-int handle_new_profile(Store &store, UI &ui, bool profile_exists) {
+auto HandleNewProfile(Store &store, UI &ui, bool profile_exists) -> int {
     if (profile_exists) {
         store.DeleteStore(false);
     }
 
     unsigned char password[MAX_PASSWORD_LENGTH + 1];
-    handle_password_setup(ui, password);
+    HandlePasswordSetup(ui, password);
     ui.DisplayHashing();
 
     int res = store.InitNewStore(password);
@@ -63,8 +61,8 @@ int handle_new_profile(Store &store, UI &ui, bool profile_exists) {
     return res;
 }
 
-Store::LoadStoreStatus handle_login(Store &store, UI &ui) {
-    string input_password;
+auto HandleLogin(Store &store, UI &ui) -> Store::LoadStoreStatus {
+    std::string input_password;
     ui.PromptLogin(input_password);
 
     unsigned char password[MAX_PASSWORD_LENGTH + 1];
@@ -72,17 +70,17 @@ Store::LoadStoreStatus handle_login(Store &store, UI &ui) {
     return store.LoadStore(password);
 }
 
-int handle_cards_list(Store &store, UI &ui) {
-    string cards_string = store.CardsDisplayString();
+auto HandleCardsList(Store &store, UI &ui) -> int {
+    std::string cards_string = store.CardsDisplayString();
     ui.CardsList(cards_string);
     return 0;
 }
 
-int handle_card_add(Store &store, UI &ui) {
-    CreditCard *card = (CreditCard *)calloc(1, sizeof(CreditCard));
+auto HandleCardAdd(Store &store, UI &ui) -> int {
+    auto *card = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
 
-    string card_name;
-    string error_msg = "";
+    std::string card_name;
+    std::string error_msg;
     while (true) {
         ui.PromptCardName(error_msg, card_name);
         if (card_name == "0") {
@@ -95,7 +93,7 @@ int handle_card_add(Store &store, UI &ui) {
         }
     }
 
-    string card_number;
+    std::string card_number;
     error_msg = "";
     while (true) {
         ui.PromptCardNumber(error_msg, card_number);
@@ -109,7 +107,7 @@ int handle_card_add(Store &store, UI &ui) {
         }
     }
 
-    string card_cvv;
+    std::string card_cvv;
     error_msg = "";
     while (true) {
         ui.PromptCardCvv(error_msg, card_cvv);
@@ -123,7 +121,7 @@ int handle_card_add(Store &store, UI &ui) {
         }
     }
 
-    string card_month;
+    std::string card_month;
     error_msg = "";
     while (true) {
         ui.PromptCardMonth(error_msg, card_month);
@@ -137,7 +135,7 @@ int handle_card_add(Store &store, UI &ui) {
         }
     }
 
-    string card_year;
+    std::string card_year;
     error_msg = "";
     while (true) {
         ui.PromptCardYear(error_msg, card_year);
@@ -152,9 +150,9 @@ int handle_card_add(Store &store, UI &ui) {
     return 0;
 }
 
-int main() {
+auto main() -> int {
     if (InitCrypto() == -1) {
-        cerr << "Failed to init crypto.\n";
+        std::cerr << "Failed to init crypto.\n";
         return -1;
     }
 
@@ -162,12 +160,12 @@ int main() {
     Store store = Store();
 
     bool logged_in = false;
-    string status_msg;
+    std::string status_msg;
     while (!logged_in) {
         bool profile_exists = store.StoreExists(false);
 
         UI::StartMenuOption selection = ui.StartMenu(status_msg, profile_exists);
-        if (check_profile_replacement(ui, profile_exists, selection) != 0) {
+        if (CheckProfileReplacement(ui, profile_exists, selection) != 0) {
             continue;
         }
 
@@ -175,14 +173,14 @@ int main() {
         case UI::OPT_START_EXIT:
             return 0;
         case UI::OPT_START_NEW_PROFILE:
-            if (handle_new_profile(store, ui, profile_exists) != 0) {
+            if (HandleNewProfile(store, ui, profile_exists) != 0) {
                 status_msg = "ERR: Failed to initialize store for new profile\n";
             } else {
                 status_msg = "Successfully created new profile!\n";
             }
             break;
         case UI::OPT_START_LOGIN:
-            switch (handle_login(store, ui)) {
+            switch (HandleLogin(store, ui)) {
             case Store::LOAD_STORE_VALID:
                 logged_in = true;
                 break;
@@ -216,10 +214,10 @@ int main() {
         case UI::OPT_PROFILE_EXIT:
             return 0;
         case UI::OPT_PROFILE_LIST:
-            handle_cards_list(store, ui);
+            HandleCardsList(store, ui);
             break;
         case UI::OPT_PROFILE_ADD:
-            handle_card_add(store, ui);
+            HandleCardAdd(store, ui);
             switch (store.SaveStore()) {
             case Store::SAVE_STORE_VALID:
                 status_msg = "New card added successfully!\n";

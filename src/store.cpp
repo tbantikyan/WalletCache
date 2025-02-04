@@ -13,7 +13,7 @@ Store::~Store() {
     this->cards_.clear();
 }
 
-int Store::InitNewStore(unsigned char *password) {
+auto Store::InitNewStore(unsigned char *password) -> int {
     unsigned char hash[HASH_LEN];
     if (HashPassword(hash, password) != 0) {
         return -1;
@@ -36,7 +36,7 @@ int Store::InitNewStore(unsigned char *password) {
     return 0;
 }
 
-Store::LoadStoreStatus Store::LoadStore(unsigned char *password) {
+auto Store::LoadStore(unsigned char *password) -> Store::LoadStoreStatus {
     unsigned char hash[HASH_LEN];
     unsigned char salt[SALT_LEN];
     if (this->OpenStoreIn(false) != 0) {
@@ -69,8 +69,8 @@ Store::LoadStoreStatus Store::LoadStore(unsigned char *password) {
         return LOAD_STORE_VALID;
     }
 
-    unsigned char *decrypted_data = (unsigned char *)malloc(data_size);
-    unsigned long long decrypted_size_actual;
+    auto *decrypted_data = static_cast<unsigned char *>(malloc(data_size));
+    uint64_t decrypted_size_actual;
     if (this->ReadData(decrypted_data, data_size, &decrypted_size_actual) != 0) {
         return LOAD_STORE_DATA_DECRYPT_ERR;
     }
@@ -86,7 +86,7 @@ Store::LoadStoreStatus Store::LoadStore(unsigned char *password) {
     return LOAD_STORE_VALID;
 }
 
-Store::SaveStoreStatus Store::SaveStore() {
+auto Store::SaveStore() -> Store::SaveStoreStatus {
     if (this->OpenStoreOut(true) != 0) {
         return SAVE_STORE_OPEN_ERR;
     }
@@ -116,21 +116,21 @@ Store::SaveStoreStatus Store::SaveStore() {
 
 void Store::AddCard(CreditCard *card) { this->cards_.push_back(card); }
 
-bool Store::StoreExists(bool is_tmp) {
-    string store_path;
+auto Store::StoreExists(bool is_tmp) -> bool {
+    std::string store_path;
     if (this->GetStorePath(store_path, is_tmp) != 0) {
-        return -1;
+        return false;
     }
 
     return CheckFileExists(store_path);
 }
 
-int Store::DeleteStore(bool is_tmp) {
+auto Store::DeleteStore(bool is_tmp) -> int {
     if (!this->StoreExists(is_tmp)) {
         return -1;
     }
 
-    string store_path;
+    std::string store_path;
     if (this->GetStorePath(store_path, is_tmp) != 0) {
         return -1;
     }
@@ -141,24 +141,24 @@ int Store::DeleteStore(bool is_tmp) {
     return 0;
 }
 
-string Store::CardsDisplayString() {
-    string result = "";
+auto Store::CardsDisplayString() -> std::string {
+    std::string result;
     for (CreditCard *card : this->cards_) {
         result += card->GetName() + "\n";
     }
     return result;
 }
 
-int Store::ReadHeader(unsigned char *hash, unsigned char *salt) {
+auto Store::ReadHeader(unsigned char *hash, unsigned char *salt) -> int {
     if (this->in_stream_.tellg() != 0) {
         return -1;
     }
 
-    this->in_stream_.read((char *)hash, HASH_LEN);
+    this->in_stream_.read(reinterpret_cast<char *>(hash), HASH_LEN);
     if (!this->in_stream_) {
         return -1;
     }
-    this->in_stream_.read((char *)salt, SALT_LEN);
+    this->in_stream_.read(reinterpret_cast<char *>(salt), SALT_LEN);
     if (!this->in_stream_) {
         return -1;
     }
@@ -170,17 +170,17 @@ int Store::ReadHeader(unsigned char *hash, unsigned char *salt) {
     return 0;
 }
 
-int Store::ReadData(unsigned char *decrypted_data, uintmax_t data_size, unsigned long long *decrypted_size_actual) {
+auto Store::ReadData(unsigned char *decrypted_data, uintmax_t data_size, uint64_t *decrypted_size_actual) -> int {
     unsigned char header[ENCRYPTION_HEADER_LEN];
     uintmax_t encrypted_data_size = data_size - ENCRYPTION_HEADER_LEN;
-    unsigned char *encrypted_data = (unsigned char *)malloc(encrypted_data_size);
+    auto *encrypted_data = static_cast<unsigned char *>(malloc(encrypted_data_size));
 
-    this->in_stream_.read((char *)header, ENCRYPTION_HEADER_LEN);
+    this->in_stream_.read(reinterpret_cast<char *>(header), ENCRYPTION_HEADER_LEN);
     if (!this->in_stream_) {
         free(encrypted_data);
         return -1;
     }
-    this->in_stream_.read((char *)encrypted_data, encrypted_data_size);
+    this->in_stream_.read(reinterpret_cast<char *>(encrypted_data), encrypted_data_size);
     if (!this->in_stream_) {
         free(encrypted_data);
         return -1;
@@ -196,14 +196,14 @@ int Store::ReadData(unsigned char *decrypted_data, uintmax_t data_size, unsigned
     return 0;
 }
 
-int Store::WriteHeader(const unsigned char *hash, const unsigned char *salt) {
+auto Store::WriteHeader(const unsigned char *hash, const unsigned char *salt) -> int {
     if (this->out_stream_.tellp() != 0) {
         this->out_stream_.close();
         return -1;
     }
 
-    this->out_stream_.write((char *)hash, HASH_LEN);
-    this->out_stream_.write((char *)salt, SALT_LEN);
+    this->out_stream_.write(reinterpret_cast<const char *>(hash), HASH_LEN);
+    this->out_stream_.write(reinterpret_cast<const char *>(salt), SALT_LEN);
     if (this->out_stream_.tellp() != (HASH_LEN + SALT_LEN)) {
         return -1;
     }
@@ -211,10 +211,10 @@ int Store::WriteHeader(const unsigned char *hash, const unsigned char *salt) {
     return 0;
 }
 
-int Store::WriteData(unsigned char *data, uintmax_t data_size) {
+auto Store::WriteData(unsigned char *data, uintmax_t data_size) -> int {
     unsigned char header[ENCRYPTION_HEADER_LEN];
-    unsigned long long encrypted_len = data_size + ENCRYPTION_ADDED_BYTES;
-    unsigned char *encrypted_data = (unsigned char *)malloc(encrypted_len);
+    uint64_t encrypted_len = data_size + ENCRYPTION_ADDED_BYTES;
+    auto *encrypted_data = static_cast<unsigned char *>(malloc(encrypted_len));
     if (encrypted_data == nullptr) {
         return -1;
     }
@@ -224,10 +224,10 @@ int Store::WriteData(unsigned char *data, uintmax_t data_size) {
         return -1;
     }
 
-    this->out_stream_.write((char *)header, sizeof(header));
-    this->out_stream_.write((char *)encrypted_data, encrypted_len);
+    this->out_stream_.write(reinterpret_cast<const char *>(header), sizeof(header));
+    this->out_stream_.write(reinterpret_cast<const char *>(encrypted_data), encrypted_len);
 
-    if ((size_t)this->out_stream_.tellp() != (HASH_LEN + SALT_LEN + sizeof(header) + encrypted_len)) {
+    if (this->out_stream_.tellp() != (HASH_LEN + SALT_LEN + sizeof(header) + encrypted_len)) {
         free(encrypted_data);
         return -1;
     }
@@ -236,7 +236,7 @@ int Store::WriteData(unsigned char *data, uintmax_t data_size) {
     return 0;
 }
 
-uintmax_t Store::GetCardsSize() {
+auto Store::GetCardsSize() -> uintmax_t {
     uintmax_t total_size;
     for (CreditCard *card_ptr : this->cards_) {
         total_size += card_ptr->FormatText().size();
@@ -244,10 +244,10 @@ uintmax_t Store::GetCardsSize() {
     return total_size;
 }
 
-uintmax_t Store::CardsFormatted(unsigned char *buf) {
+auto Store::CardsFormatted(unsigned char *buf) -> uintmax_t {
     uintmax_t pos = 0;
     for (CreditCard *card_ptr : this->cards_) {
-        string formatted_card = card_ptr->FormatText();
+        std::string formatted_card = card_ptr->FormatText();
         size_t formatted_len = formatted_card.size();
         memcpy(buf + pos, formatted_card.c_str(), formatted_len);
         pos += formatted_len;
@@ -258,10 +258,10 @@ uintmax_t Store::CardsFormatted(unsigned char *buf) {
 
 void Store::LoadCards(unsigned char *data) {
     char *rest = nullptr;
-    char *portion = strtok_r((char *)data, ";", &rest);
+    char *portion = strtok_r(reinterpret_cast<char *>(data), ";", &rest);
 
-    while (portion) {
-        CreditCard *card = (CreditCard *)calloc(1, sizeof(CreditCard));
+    while (portion != nullptr) {
+        auto *card = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
         card->InitFromText(portion);
         this->AddCard(card);
 
@@ -269,12 +269,12 @@ void Store::LoadCards(unsigned char *data) {
     }
 }
 
-uintmax_t Store::GetStoreSize(bool is_tmp) {
+auto Store::GetStoreSize(bool is_tmp) -> uintmax_t {
     if (!this->StoreExists(is_tmp)) {
         return 0;
     }
 
-    string store_path;
+    std::string store_path;
     if (this->GetStorePath(store_path, is_tmp) != 0) {
         return 0;
     }
@@ -286,14 +286,14 @@ uintmax_t Store::GetStoreSize(bool is_tmp) {
     }
 }
 
-int Store::OpenStoreIn(bool is_tmp) {
-    string store_path;
+auto Store::OpenStoreIn(bool is_tmp) -> int {
+    std::string store_path;
     if (this->GetStorePath(store_path, is_tmp) != 0) {
         return -1;
     }
 
     try {
-        this->in_stream_.open(store_path, ios::binary);
+        this->in_stream_.open(store_path, std::ios::binary);
     } catch (...) {
         return -1;
     }
@@ -301,14 +301,14 @@ int Store::OpenStoreIn(bool is_tmp) {
     return 0;
 }
 
-int Store::OpenStoreOut(bool is_tmp) {
-    string store_path;
+auto Store::OpenStoreOut(bool is_tmp) -> int {
+    std::string store_path;
     if (this->GetStorePath(store_path, is_tmp) != 0) {
         return -1;
     }
 
     try {
-        this->out_stream_.open(store_path, ios::binary);
+        this->out_stream_.open(store_path, std::ios::binary);
     } catch (...) {
         return -1;
     }
@@ -316,20 +316,20 @@ int Store::OpenStoreOut(bool is_tmp) {
     return 0;
 }
 
-int Store::GetStorePath(string &path, bool is_tmp) {
-    string homepath = GetHomePath();
+auto Store::GetStorePath(std::string &path, bool is_tmp) -> int {
+    std::string homepath = GetHomePath();
     if (homepath.empty()) {
         return -1;
     }
 
-    string file = is_tmp ? this->TMP_STORE_FILE_NAME_ : this->STORE_FILE_NAME_;
+    std::string file = is_tmp ? this->tmp_store_file_name_ : this->store_file_name_;
     path = GetFilePath(homepath, file);
     return 0;
 }
 
-int Store::CommitTemp() {
-    string perm_path;
-    string temp_path;
+auto Store::CommitTemp() -> int {
+    std::string perm_path;
+    std::string temp_path;
     this->GetStorePath(perm_path, false);
     this->GetStorePath(temp_path, true);
 
@@ -341,7 +341,7 @@ int Store::CommitTemp() {
         return 0;
     }
 
-    string backup_path = perm_path + ".bak";
+    std::string backup_path = perm_path + ".bak";
     if (rename(perm_path.c_str(), backup_path.c_str()) != 0) {
         this->DeleteStore(true);
         return -1;
@@ -353,7 +353,7 @@ int Store::CommitTemp() {
         return -1;
     }
 
-    if (!std::filesystem::remove(backup_path) != 0) {
+    if (!std::filesystem::remove(backup_path)) {
         return -1;
     }
 

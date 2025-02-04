@@ -2,7 +2,6 @@
 #define VERIFICATION_HPP
 
 #include <string>
-using namespace std;
 
 #define MIN_PASSWORD_LENGTH 8
 #define MAX_PASSWORD_LENGTH 128
@@ -14,12 +13,12 @@ enum NewPasswordStatus {
     PASS_TOO_LONG,
 };
 
-bool ValidateCreditCardNumber(string number);
+auto ValidateCreditCardNumber(const std::string &number) -> bool;
 
-bool ValidateInputAlnumOnly(string input);
-bool ValidateInputDigitsOnly(string input);
-bool ValidateInputInRange(string input, int lower, int upper);
+auto ValidateInputAlnumOnly(std::string input) -> bool;
+auto ValidateInputDigitsOnly(std::string input) -> bool;
+auto ValidateInputInRange(const std::string &input, int lower, int upper) -> bool;
 
-NewPasswordStatus VerifyNewPassword(string password, string confirm_password);
+auto VerifyNewPassword(const std::string &password, const std::string &confirm_password) -> NewPasswordStatus;
 
 #endif // VERIFICATION_HPP

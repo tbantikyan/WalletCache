@@ -1,8 +1,8 @@
 #include "utils.hpp"
 
+#include <cstdlib>
 #include <filesystem>
 #include <pwd.h>
-#include <stdlib.h>
 
 #ifdef WIN32
 #include <windows.h>
@@ -11,9 +11,7 @@
 #include <unistd.h>
 #endif
 
-using namespace std;
-
-bool CheckFileExists(string path) { return filesystem::exists(path); }
+auto CheckFileExists(const std::string &path) -> bool { return std::filesystem::exists(path); }
 
 void ClearScreen() {
 #if defined _WIN32
@@ -40,17 +38,18 @@ void EnableStdinEcho(bool enabled) {
 #else
     struct termios tty;
     tcgetattr(STDIN_FILENO, &tty);
-    if (!enabled)
+    if (!enabled) {
         tty.c_lflag &= ~ECHO;
-    else
+    } else {
         tty.c_lflag |= ECHO;
+    }
 
     (void)tcsetattr(STDIN_FILENO, TCSANOW, &tty);
 #endif
 }
 
-string GetHomePath() {
-    string path;
+auto GetHomePath() -> std::string {
+    std::string path;
 #if defined(_WIN32)
     path = getenv("HOMEPATH");
 #else
@@ -64,14 +63,14 @@ string GetHomePath() {
         return "";
     };
 
-    path = string(pwd.pw_dir);
+    path = std::string(pwd.pw_dir);
 #endif
 
     return path;
 }
 
-string GetFilePath(string dir, string file_name) {
-    string path;
+auto GetFilePath(const std::string &dir, const std::string &file_name) -> std::string {
+    std::string path;
 #if defined(_WIN32)
     path = dir + "\\" + file_name;
 #else
