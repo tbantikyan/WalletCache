@@ -12,7 +12,7 @@ int check_profile_replacement(UI ui, bool profile_exists, UI::StartMenuOption in
     if (profile_exists && input == UI::OPT_START_NEW_PROFILE) {
         string msg = "Are you sure you want to create a new profile? This will "
                      "replace the existing profile.\n";
-        if (!ui.prompt_confirmation(msg)) {
+        if (!ui.PromptConfirmation(msg)) {
             return -1;
         }
     }
@@ -26,9 +26,9 @@ void handle_password_setup(UI &ui, unsigned char *password) {
 
     NewPasswordStatus valid_password;
     do {
-        ui.create_profile_menu(error_msg, input_password, input_confirm);
+        ui.CreateProfileMenu(error_msg, input_password, input_confirm);
 
-        valid_password = verify_new_password(input_password, input_confirm);
+        valid_password = VerifyNewPassword(input_password, input_confirm);
         switch (valid_password) {
         case PASS_TOO_SHORT:
             error_msg = "Password should be at least " + to_string(MIN_PASSWORD_LENGTH) + " characters long.\n";
@@ -44,37 +44,37 @@ void handle_password_setup(UI &ui, unsigned char *password) {
         }
     } while (valid_password != PASS_VALID);
 
-    secure_cpy_str_to_buf(input_password, password);
+    SecureCpyStrToBuf(input_password, password);
     input_password.clear();
     input_confirm.clear();
 }
 
 int handle_new_profile(Store &store, UI &ui, bool profile_exists) {
     if (profile_exists) {
-        store.delete_store(false);
+        store.DeleteStore(false);
     }
 
     unsigned char password[MAX_PASSWORD_LENGTH + 1];
     handle_password_setup(ui, password);
-    ui.display_hashing();
+    ui.DisplayHashing();
 
-    int res = store.init_new_store(password);
-    memzero(password, MAX_PASSWORD_LENGTH + 1);
+    int res = store.InitNewStore(password);
+    Memzero(password, MAX_PASSWORD_LENGTH + 1);
     return res;
 }
 
 Store::LoadStoreStatus handle_login(Store &store, UI &ui) {
     string input_password;
-    ui.prompt_login(input_password);
+    ui.PromptLogin(input_password);
 
     unsigned char password[MAX_PASSWORD_LENGTH + 1];
-    secure_cpy_str_to_buf(input_password, password);
-    return store.load_store(password);
+    SecureCpyStrToBuf(input_password, password);
+    return store.LoadStore(password);
 }
 
 int handle_cards_list(Store &store, UI &ui) {
-    string cards_string = store.cards_display_string();
-    ui.cards_list(cards_string);
+    string cards_string = store.CardsDisplayString();
+    ui.CardsList(cards_string);
     return 0;
 }
 
@@ -84,11 +84,11 @@ int handle_card_add(Store &store, UI &ui) {
     string card_name;
     string error_msg = "";
     while (true) {
-        ui.prompt_card_name(error_msg, card_name);
+        ui.PromptCardName(error_msg, card_name);
         if (card_name == "0") {
             return 1;
         }
-        if (card->set_name(card_name) != 0) {
+        if (card->SetName(card_name) != 0) {
             error_msg = "ERR: Name should contain only letters and numbers!\n";
         } else {
             break;
@@ -98,11 +98,11 @@ int handle_card_add(Store &store, UI &ui) {
     string card_number;
     error_msg = "";
     while (true) {
-        ui.prompt_card_number(error_msg, card_number);
+        ui.PromptCardNumber(error_msg, card_number);
         if (card_number == "0") {
             return 1;
         }
-        if (card->set_card_number(card_number) != 0) {
+        if (card->SetCardNumber(card_number) != 0) {
             error_msg = "ERR: Invalid card number!\n";
         } else {
             break;
@@ -112,11 +112,11 @@ int handle_card_add(Store &store, UI &ui) {
     string card_cvv;
     error_msg = "";
     while (true) {
-        ui.prompt_card_cvv(error_msg, card_cvv);
+        ui.PromptCardCvv(error_msg, card_cvv);
         if (card_cvv == "0") {
             return 1;
         }
-        if (card->set_cvv(card_cvv) != 0) {
+        if (card->SetCvv(card_cvv) != 0) {
             error_msg = "ERR: Invalid card cvv!\n";
         } else {
             break;
@@ -126,11 +126,11 @@ int handle_card_add(Store &store, UI &ui) {
     string card_month;
     error_msg = "";
     while (true) {
-        ui.prompt_card_month(error_msg, card_month);
+        ui.PromptCardMonth(error_msg, card_month);
         if (card_month == "0") {
             return 1;
         }
-        if (card->set_month(card_month) != 0) {
+        if (card->SetMonth(card_month) != 0) {
             error_msg = "ERR: Invalid card month!\n";
         } else {
             break;
@@ -140,20 +140,20 @@ int handle_card_add(Store &store, UI &ui) {
     string card_year;
     error_msg = "";
     while (true) {
-        ui.prompt_card_year(error_msg, card_year);
-        if (card->set_year(card_year) != 0) {
+        ui.PromptCardYear(error_msg, card_year);
+        if (card->SetYear(card_year) != 0) {
             error_msg = "ERR: Invalid card year!\n";
         } else {
             break;
         }
     }
 
-    store.add_card(card);
+    store.AddCard(card);
     return 0;
 }
 
 int main() {
-    if (init_crypto() == -1) {
+    if (InitCrypto() == -1) {
         cerr << "Failed to init crypto.\n";
         return -1;
     }
@@ -164,9 +164,9 @@ int main() {
     bool logged_in = false;
     string status_msg;
     while (!logged_in) {
-        bool profile_exists = store.store_exists(false);
+        bool profile_exists = store.StoreExists(false);
 
-        UI::StartMenuOption selection = ui.start_menu(status_msg, profile_exists);
+        UI::StartMenuOption selection = ui.StartMenu(status_msg, profile_exists);
         if (check_profile_replacement(ui, profile_exists, selection) != 0) {
             continue;
         }
@@ -211,7 +211,7 @@ int main() {
 
     status_msg = "";
     while (true) {
-        UI::ProfileMenuOption selection = ui.profile_menu(status_msg);
+        UI::ProfileMenuOption selection = ui.ProfileMenu(status_msg);
         switch (selection) {
         case UI::OPT_PROFILE_EXIT:
             return 0;
@@ -220,7 +220,7 @@ int main() {
             break;
         case UI::OPT_PROFILE_ADD:
             handle_card_add(store, ui);
-            switch (store.save_store()) {
+            switch (store.SaveStore()) {
             case Store::SAVE_STORE_VALID:
                 status_msg = "New card added successfully!\n";
                 break;

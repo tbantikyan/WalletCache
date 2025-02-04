@@ -14,12 +14,12 @@ enum NewPasswordStatus {
     PASS_TOO_LONG,
 };
 
-bool validate_credit_card_number(string number);
+bool ValidateCreditCardNumber(string number);
 
-bool validate_input_alnum_only(string input);
-bool validate_input_digits_only(string input);
-bool validate_input_in_range(string input, int lower, int upper);
+bool ValidateInputAlnumOnly(string input);
+bool ValidateInputDigitsOnly(string input);
+bool ValidateInputInRange(string input, int lower, int upper);
 
-NewPasswordStatus verify_new_password(string password, string confirm_password);
+NewPasswordStatus VerifyNewPassword(string password, string confirm_password);
 
 #endif // VERIFICATION_HPP

@@ -6,8 +6,8 @@
 
 using namespace std;
 
-UI::StartMenuOption UI::start_menu(string status_msg, bool profile_exists) {
-    clear_screen();
+UI::StartMenuOption UI::StartMenu(string status_msg, bool profile_exists) {
+    ClearScreen();
     cout << status_msg;
     cout << "Welcome to WalletCache\n\n";
     cout << "Select an option below:\n";
@@ -17,21 +17,21 @@ UI::StartMenuOption UI::start_menu(string status_msg, bool profile_exists) {
         cout << "  (2): LOGIN TO EXISTING PROFILE\n";
     }
 
-    return (UI::StartMenuOption)get_selection(0, profile_exists ? 2 : 1);
+    return (UI::StartMenuOption)GetSelection(0, profile_exists ? 2 : 1);
 }
 
-void UI::create_profile_menu(string status_msg, string &password, string &confirm_password) {
-    clear_screen();
+void UI::CreateProfileMenu(string status_msg, string &password, string &confirm_password) {
+    ClearScreen();
 
     cout << status_msg;
     cout << "Enter a master password:\n";
-    password = this->prompt_input_masked();
+    password = this->PromptInputMasked();
     cout << "Confirm master password:\n";
-    confirm_password = this->prompt_input_masked();
+    confirm_password = this->PromptInputMasked();
 }
 
-UI::ProfileMenuOption UI::profile_menu(string status_msg) {
-    clear_screen();
+UI::ProfileMenuOption UI::ProfileMenu(string status_msg) {
+    ClearScreen();
     cout << status_msg;
     cout << "Welcome to WalletCache\n\n";
     cout << "Select an option below:\n";
@@ -40,78 +40,79 @@ UI::ProfileMenuOption UI::profile_menu(string status_msg) {
     cout << "  (2): ADD\n";
     cout << "  (3): DELETE\n";
 
-    return (UI::ProfileMenuOption)get_selection(0, 3);
+    return (UI::ProfileMenuOption)GetSelection(0, 3);
 }
 
-void UI::cards_list(string cards_string) {
-    clear_screen();
+void UI::CardsList(string cards_string) {
+    ClearScreen();
     cout << cards_string;
 }
 
-void UI::display_hashing() { cout << "\nHashing...\n"; }
+void UI::DisplayHashing() { cout << "\nHashing...\n"; }
 
-void UI::prompt_card_cvv(string error_msg, string &cvv) {
-    clear_screen();
+void UI::PromptCardCvv(string error_msg, string &cvv) {
+    ClearScreen();
 
     cout << error_msg;
     cout << "Enter card CVV (or 0 to cancel):\n";
-    cvv = this->prompt_input();
+    cvv = this->PromptInput();
 }
 
-void UI::prompt_card_month(string error_msg, string &month) {
-    clear_screen();
+void UI::PromptCardMonth(string error_msg, string &month) {
+    ClearScreen();
 
     cout << error_msg;
     cout << "Enter card expiration month [ex: 10 for October] (or 0 to cancel):\n";
-    month = this->prompt_input();
+    month = this->PromptInput();
 }
 
-void UI::prompt_card_name(string error_msg, string &card_name) {
-    clear_screen();
-    
+void UI::PromptCardName(string error_msg, string &card_name) {
+    ClearScreen();
+
     cout << error_msg;
-    cout << "Optional: enter a name for the card [only letters or numbers] (or 0 to cancel):\n";
-    card_name = this->prompt_input();
+    cout << "Optional: enter a name for the card [only letters or numbers] (or 0 "
+            "to cancel):\n";
+    card_name = this->PromptInput();
 }
 
-void UI::prompt_card_number(string error_msg, string &card_number) {
-    clear_screen();
-    
+void UI::PromptCardNumber(string error_msg, string &card_number) {
+    ClearScreen();
+
     cout << error_msg;
     cout << "Enter card number (or 0 to cancel):\n";
-    card_number = this->prompt_input();
+    card_number = this->PromptInput();
 }
 
-void UI::prompt_card_year(string error_msg, string &year) {
-    clear_screen();
+void UI::PromptCardYear(string error_msg, string &year) {
+    ClearScreen();
 
     cout << error_msg;
     cout << "Enter card expiration year [ex: 2025] (or 0 to cancel):\n";
-    year = this->prompt_input();
+    year = this->PromptInput();
 }
 
-void UI::prompt_login(string &password) {
-    clear_screen();
+void UI::PromptLogin(string &password) {
+    ClearScreen();
 
     cout << "Enter profile password:\n";
-    password = this->prompt_input_masked();
+    password = this->PromptInputMasked();
 }
 
-bool UI::prompt_confirmation(string msg) {
+bool UI::PromptConfirmation(string msg) {
     cout << "\n";
     cout << msg;
     cout << "(  0) Cancel\n";
     cout << "(  1) Confirm\n";
 
-    return this->get_selection(0, 1) == 1;
+    return this->GetSelection(0, 1) == 1;
 }
 
-int UI::get_selection(int lower, int upper) {
+int UI::GetSelection(int lower, int upper) {
     string input_string;
     bool valid_input;
     do {
-        input_string = this->prompt_input();
-        valid_input = validate_input_in_range(input_string, lower, upper);
+        input_string = this->PromptInput();
+        valid_input = ValidateInputInRange(input_string, lower, upper);
 
         if (!valid_input) {
             cout << "Please input a number corresponding to available "
@@ -122,7 +123,7 @@ int UI::get_selection(int lower, int upper) {
     return stoi(input_string);
 }
 
-string UI::prompt_input() {
+string UI::PromptInput() {
     cout << "> ";
     string input;
     getline(cin, input);
@@ -130,9 +131,9 @@ string UI::prompt_input() {
     return input;
 }
 
-string UI::prompt_input_masked() {
-    enable_stdin_echo(false);
-    string input = this->prompt_input();
-    enable_stdin_echo(true);
+string UI::PromptInputMasked() {
+    EnableStdinEcho(false);
+    string input = this->PromptInput();
+    EnableStdinEcho(true);
     return input;
 }

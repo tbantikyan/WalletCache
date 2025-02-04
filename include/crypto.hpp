@@ -15,19 +15,19 @@
 #define MEM_LIMIT (crypto_pwhash_MEMLIMIT_SENSITIVE)
 #define SALT_LEN (crypto_pwhash_SALTBYTES)
 
-int init_crypto();
+int InitCrypto();
 
-int derive_encryption_key(unsigned char *key, size_t key_len, const unsigned char *password, const unsigned char *salt);
-int encrypt_buf(unsigned char *out_data, unsigned char *header, const unsigned char *buf, uintmax_t buf_len,
-                const unsigned char *key);
-int hash_password(unsigned char *hash, const unsigned char *password);
-void generate_salt(unsigned char *salt);
+int DeriveEncryptionKey(unsigned char *key, size_t key_len, const unsigned char *password, const unsigned char *salt);
+int EncryptBuf(unsigned char *out_data, unsigned char *header, const unsigned char *buf, uintmax_t buf_len,
+               const unsigned char *key);
+int HashPassword(unsigned char *hash, const unsigned char *password);
+void GenerateSalt(unsigned char *salt);
 
-int decrypt_buf(unsigned char *out_data, unsigned long long *out_len, unsigned char *header,
-                unsigned char *encrypted_buf, uintmax_t buf_len, const unsigned char *key);
-int verify_password_hash(unsigned char *hash, const unsigned char *password);
+int DecryptBuf(unsigned char *out_data, unsigned long long *out_len, unsigned char *header,
+               unsigned char *encrypted_buf, uintmax_t buf_len, const unsigned char *key);
+int VerifyPasswordHash(unsigned char *hash, const unsigned char *password);
 
-void memzero(void *const ptr, const size_t len);
-void secure_cpy_str_to_buf(std::string &str, unsigned char *buf);
+void Memzero(void *const ptr, const size_t len);
+void SecureCpyStrToBuf(std::string &str, unsigned char *buf);
 
 #endif // CRYPTO_HPP

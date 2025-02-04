@@ -13,9 +13,9 @@
 
 using namespace std;
 
-bool check_file_exists(string path) { return filesystem::exists(path); }
+bool CheckFileExists(string path) { return filesystem::exists(path); }
 
-void clear_screen() {
+void ClearScreen() {
 #if defined _WIN32
     system("cls");
 #elif defined(__LINUX__) || defined(__gnu_linux__) || defined(__linux__)
@@ -25,7 +25,7 @@ void clear_screen() {
 #endif
 }
 
-void enable_stdin_echo(bool enabled) {
+void EnableStdinEcho(bool enabled) {
 #ifdef WIN32
     HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
     DWORD mode;
@@ -49,7 +49,7 @@ void enable_stdin_echo(bool enabled) {
 #endif
 }
 
-string get_home_path() {
+string GetHomePath() {
     string path;
 #if defined(_WIN32)
     path = getenv("HOMEPATH");
@@ -70,7 +70,7 @@ string get_home_path() {
     return path;
 }
 
-string get_file_path(string dir, string file_name) {
+string GetFilePath(string dir, string file_name) {
     string path;
 #if defined(_WIN32)
     path = dir + "\\" + file_name;

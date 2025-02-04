@@ -30,43 +30,43 @@ class Store {
 
     ~Store();
 
-    int init_new_store(unsigned char *password);
-    LoadStoreStatus load_store(unsigned char *password);
-    SaveStoreStatus save_store();
-    void add_card(CreditCard *card);
+    int InitNewStore(unsigned char *password);
+    LoadStoreStatus LoadStore(unsigned char *password);
+    SaveStoreStatus SaveStore();
+    void AddCard(CreditCard *card);
 
-    bool store_exists(bool is_tmp);
-    int delete_store(bool is_tmp);
+    bool StoreExists(bool is_tmp);
+    int DeleteStore(bool is_tmp);
 
-    string cards_display_string();
+    string CardsDisplayString();
 
   private:
-    vector<struct CreditCard *> cards;
+    vector<struct CreditCard *> cards_;
 
-    unsigned char hashed_password[HASH_LEN];
-    unsigned char salt[SALT_LEN];
-    unsigned char encryption_key[ENCYRPTION_KEY_LEN];
+    unsigned char hashed_password_[HASH_LEN];
+    unsigned char salt_[SALT_LEN];
+    unsigned char encryption_key_[ENCYRPTION_KEY_LEN];
 
-    const string STORE_FILE_NAME = "WalletCache.store";
-    const string TMP_STORE_FILE_NAME = "WalletCache.store.tmp";
+    const string STORE_FILE_NAME_ = "WalletCache.store";
+    const string TMP_STORE_FILE_NAME_ = "WalletCache.store.tmp";
 
-    ifstream in_stream;
-    ofstream out_stream;
+    ifstream in_stream_;
+    ofstream out_stream_;
 
-    int read_header(unsigned char *hash, unsigned char *salt);
-    int read_data(unsigned char *decrypted_data, uintmax_t data_size, unsigned long long *decrypted_size_actual);
-    int write_header(const unsigned char *hash, const unsigned char *salt);
-    int write_data(unsigned char *data, uintmax_t data_size);
+    int ReadHeader(unsigned char *hash, unsigned char *salt);
+    int ReadData(unsigned char *decrypted_data, uintmax_t data_size, unsigned long long *decrypted_size_actual);
+    int WriteHeader(const unsigned char *hash, const unsigned char *salt);
+    int WriteData(unsigned char *data, uintmax_t data_size);
 
-    uintmax_t get_cards_size();
-    uintmax_t cards_formatted(unsigned char *buf);
-    void load_cards(unsigned char* data);
+    uintmax_t GetCardsSize();
+    uintmax_t CardsFormatted(unsigned char *buf);
+    void LoadCards(unsigned char *data);
 
-    uintmax_t get_store_size(bool is_tmp);
-    int open_store_in(bool is_tmp);
-    int open_store_out(bool is_tmp);
-    int get_store_path(string &path, bool is_tmp);
-    int commit_temp();
+    uintmax_t GetStoreSize(bool is_tmp);
+    int OpenStoreIn(bool is_tmp);
+    int OpenStoreOut(bool is_tmp);
+    int GetStorePath(string &path, bool is_tmp);
+    int CommitTemp();
 };
 
 #endif // STORE_HPP

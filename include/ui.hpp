@@ -20,25 +20,25 @@ class UI {
         OPT_PROFILE_DEL,
     };
 
-    StartMenuOption start_menu(string error_msg, bool profile_exists);
-    void create_profile_menu(string error_msg, string &password, string &confirm_password);
-    ProfileMenuOption profile_menu(string error_msg);
-    void cards_list(string cards_string);
+    StartMenuOption StartMenu(string error_msg, bool profile_exists);
+    void CreateProfileMenu(string error_msg, string &password, string &confirm_password);
+    ProfileMenuOption ProfileMenu(string error_msg);
+    void CardsList(string cards_string);
 
-    void display_hashing();
+    void DisplayHashing();
 
-    void prompt_card_cvv(string error_msg, string &cvv);
-    void prompt_card_month(string error_msg, string &month);
-    void prompt_card_name(string error_msg, string &card_name);
-    void prompt_card_number(string error_msg, string &card_number);
-    void prompt_card_year(string error_msg, string &year);
-    void prompt_login(string &password);
-    bool prompt_confirmation(string msg);
+    void PromptCardCvv(string error_msg, string &cvv);
+    void PromptCardMonth(string error_msg, string &month);
+    void PromptCardName(string error_msg, string &card_name);
+    void PromptCardNumber(string error_msg, string &card_number);
+    void PromptCardYear(string error_msg, string &year);
+    void PromptLogin(string &password);
+    bool PromptConfirmation(string msg);
 
   private:
-    int get_selection(int lower, int upper);
-    inline string prompt_input();
-    inline string prompt_input_masked();
+    int GetSelection(int lower, int upper);
+    inline string PromptInput();
+    inline string PromptInputMasked();
 };
 
 #endif // UI_HPP

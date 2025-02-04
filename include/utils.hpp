@@ -5,14 +5,14 @@
 
 using namespace std;
 
-bool check_file_exists(string path);
+bool CheckFileExists(string path);
 
-void clear_screen();
+void ClearScreen();
 
-void enable_stdin_echo(bool enabled);
+void EnableStdinEcho(bool enabled);
 
-string get_home_path();
+string GetHomePath();
 
-string get_file_path(string dir, string file_name);
+string GetFilePath(string dir, string file_name);
 
 #endif // UTILS_HPP

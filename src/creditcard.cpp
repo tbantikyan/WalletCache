@@ -1,119 +1,119 @@
 #include "creditcard.hpp"
 #include "verification.hpp"
 
-int CreditCard::set_name(string name) {
-    if (name.size() != 0 && !validate_input_alnum_only(name)) {
+int CreditCard::SetName(string name) {
+    if (name.size() != 0 && !ValidateInputAlnumOnly(name)) {
         return -1;
     }
 
-    this->name = name;
+    this->name_ = name;
     return 0;
 }
 
-int CreditCard::set_card_number(string card_number) {
-    if (!validate_input_digits_only(card_number)) {
+int CreditCard::SetCardNumber(string card_number) {
+    if (!ValidateInputDigitsOnly(card_number)) {
         return -1;
     }
-    if (!validate_credit_card_number(card_number)) {
+    if (!ValidateCreditCardNumber(card_number)) {
         return -1;
     }
 
-    this->card_number = card_number;
-    this->determine_network();
+    this->card_number_ = card_number;
+    this->DetermineNetwork();
     return 0;
 }
 
-int CreditCard::set_cvv(string cvv) {
+int CreditCard::SetCvv(string cvv) {
     int cvv_len = cvv.size();
-    if ((this->network == CreditCard::CARD_AMEX && cvv_len != 4) ||
-        (this->network != CreditCard::CARD_AMEX && cvv_len != 3)) {
+    if ((this->network_ == CreditCard::CARD_AMEX && cvv_len != 4) ||
+        (this->network_ != CreditCard::CARD_AMEX && cvv_len != 3)) {
         return -1;
     }
 
-    this->cvv = cvv;
+    this->cvv_ = cvv;
     return 0;
 }
 
-int CreditCard::set_month(string month) {
-    if (!validate_input_in_range(month, 1, 12)) {
+int CreditCard::SetMonth(string month) {
+    if (!ValidateInputInRange(month, 1, 12)) {
         return -1;
     }
 
-    this->month = month;
+    this->month_ = month;
     return 0;
 }
 
-int CreditCard::set_year(string year) {
-    if (!validate_input_in_range(year, 1900, 2100)) {
+int CreditCard::SetYear(string year) {
+    if (!ValidateInputInRange(year, 1900, 2100)) {
         return -1;
     }
 
-    this->year = year;
+    this->year_ = year;
     return 0;
 }
 
-string CreditCard::get_name() {
-    if (this->name != "") {
-        return this->name;
-    } else if (this->default_name != "") {
-        return this->default_name;
+string CreditCard::GetName() {
+    if (this->name_ != "") {
+        return this->name_;
+    } else if (this->default_name_ != "") {
+        return this->default_name_;
     }
 
-    if (this->card_number == "") {
+    if (this->card_number_ == "") {
         return "";
     }
 
-    string last_four_digits = this->card_number.substr(this->card_number.size() - 4);
-    this->default_name = this->get_network_string() + " " + last_four_digits;
-    return default_name;
+    string last_four_digits = this->card_number_.substr(this->card_number_.size() - 4);
+    this->default_name_ = this->GetNetworkString() + " " + last_four_digits;
+    return default_name_;
 }
 
-string CreditCard::format_text() {
-    return this->name + "," + this->card_number + "," + this->cvv + "," + this->month + "," + this->year + ";";
+string CreditCard::FormatText() {
+    return this->name_ + "," + this->card_number_ + "," + this->cvv_ + "," + this->month_ + "," + this->year_ + ";";
 }
 
-void CreditCard::init_from_text(char *text) {
+void CreditCard::InitFromText(char *text) {
     char *rest = nullptr;
     char *field = strtok_r(text, ",", &rest);
 
     if (text[0] != ',') {
-        this->set_name(string(field));
+        this->SetName(string(field));
         field = strtok_r(nullptr, ",", &rest);
     }
-    this->set_card_number(string(field));
+    this->SetCardNumber(string(field));
 
     field = strtok_r(nullptr, ",", &rest);
-    this->set_cvv(string(field));
+    this->SetCvv(string(field));
 
     field = strtok_r(nullptr, ",", &rest);
-    this->set_month(string(field));
+    this->SetMonth(string(field));
 
     field = strtok_r(nullptr, ",", &rest);
-    this->set_year(string(field));
+    this->SetYear(string(field));
 }
 
-void CreditCard::determine_network() {
-    switch (this->card_number[0]) {
+void CreditCard::DetermineNetwork() {
+    switch (this->card_number_[0]) {
     case '4':
-        this->network = CreditCard::CARD_VISA;
+        this->network_ = CreditCard::CARD_VISA;
         break;
     case '2':
     case '5':
-        this->network = CreditCard::CARD_MASTERCARD;
+        this->network_ = CreditCard::CARD_MASTERCARD;
         break;
     case '3':
-        this->network = CreditCard::CARD_AMEX;
+        this->network_ = CreditCard::CARD_AMEX;
         break;
     case '6':
-        this->network = CreditCard::CARD_DISCOVER;
+        this->network_ = CreditCard::CARD_DISCOVER;
         break;
     default:
-        this->network = CreditCard::CARD_OTHER;
+        this->network_ = CreditCard::CARD_OTHER;
     }
 }
 
-string CreditCard::get_network_string() {
-    switch (this->network) {
+string CreditCard::GetNetworkString() {
+    switch (this->network_) {
     case CreditCard::CARD_OTHER:
         return "Other";
     case CARD_VISA:

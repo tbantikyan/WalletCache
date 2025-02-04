@@ -4,191 +4,191 @@
 
 class CreditCardTest : public ::testing::Test {
   protected:
-    string TEST_get_network_string(CreditCard &card) {
-        return card.get_network_string(); // Access via friend
+    string TEST_GetNetworkString(CreditCard &card) {
+        return card.GetNetworkString(); // Access via friend
     }
 };
 
-// set_name
-TEST_F(CreditCardTest, set_name_ValidAlnum_0) {
+// SetName
+TEST_F(CreditCardTest, SetName_ValidAlnum_0) {
     CreditCard card;
-    ASSERT_EQ(card.set_name("JohnDoe123"), 0);
+    ASSERT_EQ(card.SetName("JohnDoe123"), 0);
 }
 
-TEST_F(CreditCardTest, set_name_InvalidChars_Negative1) {
+TEST_F(CreditCardTest, SetName_InvalidChars_Negative1) {
     CreditCard card;
-    ASSERT_EQ(card.set_name("John@Doe"), -1);
+    ASSERT_EQ(card.SetName("John@Doe"), -1);
 }
 
-TEST_F(CreditCardTest, set_name_Empty_0) {
+TEST_F(CreditCardTest, SetName_Empty_0) {
     CreditCard card;
-    ASSERT_EQ(card.set_name(""), 0);
+    ASSERT_EQ(card.SetName(""), 0);
 }
 
-// set_card_number
-TEST_F(CreditCardTest, set_card_number_ValidDigitsAndLuhn_0) {
+// SetCardNumber
+TEST_F(CreditCardTest, SetCardNumber_ValidDigitsAndLuhn_0) {
     CreditCard card;
-    ASSERT_EQ(card.set_card_number("4111111111111111"), 0);
+    ASSERT_EQ(card.SetCardNumber("4111111111111111"), 0);
 }
 
-TEST_F(CreditCardTest, set_card_number_InvalidDigits_Negative1) {
+TEST_F(CreditCardTest, SetCardNumber_InvalidDigits_Negative1) {
     CreditCard card;
-    ASSERT_EQ(card.set_card_number("4111-1111-1111"), -1);
+    ASSERT_EQ(card.SetCardNumber("4111-1111-1111"), -1);
 }
 
-TEST_F(CreditCardTest, set_card_number_ValidDigitsInvalidLuhn_Negative1) {
+TEST_F(CreditCardTest, SetCardNumber_ValidDigitsInvalidLuhn_Negative1) {
     CreditCard card;
-    ASSERT_EQ(card.set_card_number("4111111111111112"), -1);
+    ASSERT_EQ(card.SetCardNumber("4111111111111112"), -1);
 }
 
-TEST_F(CreditCardTest, set_card_number_EmptyInput_Negative1) {
+TEST_F(CreditCardTest, SetCardNumber_EmptyInput_Negative1) {
     CreditCard card;
-    ASSERT_EQ(card.set_card_number(""), -1);
+    ASSERT_EQ(card.SetCardNumber(""), -1);
 }
 
-// set_cvv
-TEST_F(CreditCardTest, set_cvv_Amex4Digits_0) {
+// SetCvv
+TEST_F(CreditCardTest, SetCvv_Amex4Digits_0) {
     CreditCard card;
-    card.set_card_number("371046275845869");
-    ASSERT_EQ(card.set_cvv("1234"), 0);
+    card.SetCardNumber("371046275845869");
+    ASSERT_EQ(card.SetCvv("1234"), 0);
 }
 
-TEST_F(CreditCardTest, set_cvv_Amex3Digits_Negative1) {
+TEST_F(CreditCardTest, SetCvv_Amex3Digits_Negative1) {
     CreditCard card;
-    card.set_card_number("371046275845869");
-    ASSERT_EQ(card.set_cvv("123"), -1);
+    card.SetCardNumber("371046275845869");
+    ASSERT_EQ(card.SetCvv("123"), -1);
 }
 
-TEST_F(CreditCardTest, set_cvv_Mastercard3Digits_0) {
+TEST_F(CreditCardTest, SetCvv_Mastercard3Digits_0) {
     CreditCard card;
-    card.set_card_number("5555555555554444");
-    ASSERT_EQ(card.set_cvv("123"), 0);
+    card.SetCardNumber("5555555555554444");
+    ASSERT_EQ(card.SetCvv("123"), 0);
 }
 
-TEST_F(CreditCardTest, set_cvv_Mastercard4Digits_Negative1) {
+TEST_F(CreditCardTest, SetCvv_Mastercard4Digits_Negative1) {
     CreditCard card;
-    card.set_card_number("5555555555554444");
-    ASSERT_EQ(card.set_cvv("1234"), -1);
+    card.SetCardNumber("5555555555554444");
+    ASSERT_EQ(card.SetCvv("1234"), -1);
 }
 
-// set_month
-TEST_F(CreditCardTest, set_month_ValidMonth_0) {
+// SetMonth
+TEST_F(CreditCardTest, SetMonth_ValidMonth_0) {
     CreditCard card;
-    ASSERT_EQ(card.set_month("12"), 0);
+    ASSERT_EQ(card.SetMonth("12"), 0);
 }
 
-TEST_F(CreditCardTest, set_month_InvalidMonth_Negative1) {
+TEST_F(CreditCardTest, SetMonth_InvalidMonth_Negative1) {
     CreditCard card;
-    ASSERT_EQ(card.set_month("13"), -1);
-    ASSERT_EQ(card.set_month("0"), -1);
+    ASSERT_EQ(card.SetMonth("13"), -1);
+    ASSERT_EQ(card.SetMonth("0"), -1);
 }
 
-// set_year
-TEST_F(CreditCardTest, set_year_ValidYear_0) {
+// SetYear
+TEST_F(CreditCardTest, SetYear_ValidYear_0) {
     CreditCard card;
-    ASSERT_EQ(card.set_year("2025"), 0);
+    ASSERT_EQ(card.SetYear("2025"), 0);
 }
 
-TEST_F(CreditCardTest, set_year_InvalidYear_Negative1) {
+TEST_F(CreditCardTest, SetYear_InvalidYear_Negative1) {
     CreditCard card;
-    ASSERT_EQ(card.set_year("1899"), -1);
+    ASSERT_EQ(card.SetYear("1899"), -1);
 }
 
-// get_name
-TEST_F(CreditCardTest, get_name_NameSet) {
+// GetName
+TEST_F(CreditCardTest, GetName_NameSet) {
     CreditCard card;
-    card.set_name("Travel");
-    ASSERT_EQ(card.get_name(), "Travel");
+    card.SetName("Travel");
+    ASSERT_EQ(card.GetName(), "Travel");
 }
 
-TEST_F(CreditCardTest, get_name_NameEmptyCardSet_DefaultName) {
+TEST_F(CreditCardTest, GetName_NameEmptyCardSet_DefaultName) {
     CreditCard card;
-    card.set_card_number("4111111111111111");
-    ASSERT_EQ(card.get_name(), "Visa 1111");
+    card.SetCardNumber("4111111111111111");
+    ASSERT_EQ(card.GetName(), "Visa 1111");
 }
 
-TEST_F(CreditCardTest, get_name_NameAndCardEmpty_Empty) {
+TEST_F(CreditCardTest, GetName_NameAndCardEmpty_Empty) {
     CreditCard card;
-    ASSERT_EQ(card.get_name(), "");
+    ASSERT_EQ(card.GetName(), "");
 }
 
-TEST_F(CreditCardTest, get_name_NameResetToEmpty_ReturnsDefault) {
+TEST_F(CreditCardTest, GetName_NameResetToEmpty_ReturnsDefault) {
     CreditCard card;
-    card.set_card_number("4111111111111111");
-    card.set_name("Restaurants");
-    ASSERT_EQ(card.get_name(), "Restaurants");
-    card.set_name("");
-    ASSERT_EQ(card.get_name(), "Visa 1111");
+    card.SetCardNumber("4111111111111111");
+    card.SetName("Restaurants");
+    ASSERT_EQ(card.GetName(), "Restaurants");
+    card.SetName("");
+    ASSERT_EQ(card.GetName(), "Visa 1111");
 }
 
-// format_text
-TEST_F(CreditCardTest, format_text_AllFieldsFilled_FormattedString) {
+// FormatText
+TEST_F(CreditCardTest, FormatText_AllFieldsFilled_FormattedString) {
     CreditCard card;
-    card.set_name("BCE");
-    card.set_card_number("4111111111111111");
-    card.set_cvv("123");
-    card.set_month("12");
-    card.set_year("2025");
-    ASSERT_EQ(card.format_text(), "BCE,4111111111111111,123,12,2025;");
+    card.SetName("BCE");
+    card.SetCardNumber("4111111111111111");
+    card.SetCvv("123");
+    card.SetMonth("12");
+    card.SetYear("2025");
+    ASSERT_EQ(card.FormatText(), "BCE,4111111111111111,123,12,2025;");
 }
 
-TEST_F(CreditCardTest, format_text_NameEmpty_FormattedWithoutName) {
+TEST_F(CreditCardTest, FormatText_NameEmpty_FormattedWithoutName) {
     CreditCard card;
-    card.set_card_number("4111111111111111");
-    card.set_cvv("123");
-    card.set_month("12");
-    card.set_year("2025");
-    ASSERT_EQ(card.format_text(), ",4111111111111111,123,12,2025;");
+    card.SetCardNumber("4111111111111111");
+    card.SetCvv("123");
+    card.SetMonth("12");
+    card.SetYear("2025");
+    ASSERT_EQ(card.FormatText(), ",4111111111111111,123,12,2025;");
 }
 
-// init_from_text
-TEST_F(CreditCardTest, init_from_text_WithName) {
+// InitFromText
+TEST_F(CreditCardTest, InitFromText_WithName) {
     CreditCard card;
     char text[] = "CSR,4111111111111111,123,12,2025";
-    card.init_from_text(text);
-    ASSERT_EQ(card.format_text(), "CSR,4111111111111111,123,12,2025;");
+    card.InitFromText(text);
+    ASSERT_EQ(card.FormatText(), "CSR,4111111111111111,123,12,2025;");
 }
 
-TEST_F(CreditCardTest, init_from_text_WithoutName) {
+TEST_F(CreditCardTest, InitFromText_WithoutName) {
     CreditCard card;
     char text[] = ",371046275845869,1234,12,2025";
-    card.init_from_text(text);
-    ASSERT_EQ(card.format_text(), ",371046275845869,1234,12,2025;");
+    card.InitFromText(text);
+    ASSERT_EQ(card.FormatText(), ",371046275845869,1234,12,2025;");
 }
 
-// get_network_string
-TEST_F(CreditCardTest, get_network_string_VisaCard_Visa) {
+// GetNetworkString
+TEST_F(CreditCardTest, GetNetworkString_VisaCard_Visa) {
     CreditCard card;
-    card.set_card_number("4111111111111111");
-    ASSERT_EQ(TEST_get_network_string(card), "Visa");
+    card.SetCardNumber("4111111111111111");
+    ASSERT_EQ(TEST_GetNetworkString(card), "Visa");
 }
 
-TEST_F(CreditCardTest, get_network_string_Mastercard2_Mastercard) {
+TEST_F(CreditCardTest, GetNetworkString_Mastercard2Card_Mastercard) {
     CreditCard card;
-    card.set_card_number("2439331222445302");
-    ASSERT_EQ(TEST_get_network_string(card), "Mastercard");
+    card.SetCardNumber("2439331222445302");
+    ASSERT_EQ(TEST_GetNetworkString(card), "Mastercard");
 }
 
-TEST_F(CreditCardTest, get_network_string_Mastercard5_Mastercard) {
+TEST_F(CreditCardTest, GetNetworkString_Mastercard5Card_Mastercard) {
     CreditCard card;
-    card.set_card_number("5555555555554444");
-    ASSERT_EQ(TEST_get_network_string(card), "Mastercard");
+    card.SetCardNumber("5555555555554444");
+    ASSERT_EQ(TEST_GetNetworkString(card), "Mastercard");
 }
 
-TEST_F(CreditCardTest, get_network_string_Amex_AmericanExpress) {
+TEST_F(CreditCardTest, GetNetworkString_AmexCard_AmericanExpress) {
     CreditCard card;
-    card.set_card_number("371046275845869");
-    ASSERT_EQ(TEST_get_network_string(card), "American Express");
+    card.SetCardNumber("371046275845869");
+    ASSERT_EQ(TEST_GetNetworkString(card), "American Express");
 }
 
-TEST_F(CreditCardTest, get_network_string_Discover_Discover) {
+TEST_F(CreditCardTest, GetNetworkString_DiscoverCard_Discover) {
     CreditCard card;
-    card.set_card_number("6011111111111117");
-    ASSERT_EQ(TEST_get_network_string(card), "Discover");
+    card.SetCardNumber("6011111111111117");
+    ASSERT_EQ(TEST_GetNetworkString(card), "Discover");
 }
 
-TEST_F(CreditCardTest, get_network_string_Other_Other) {
+TEST_F(CreditCardTest, GetNetworkString_OtherCard_Other) {
     CreditCard card;
-    card.set_card_number("8252624630862584");
-    ASSERT_EQ(TEST_get_network_string(card), "Other");
+    card.SetCardNumber("8252624630862584");
+    ASSERT_EQ(TEST_GetNetworkString(card), "Other");
 }

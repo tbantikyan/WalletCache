@@ -1,7 +1,7 @@
 #include "verification.hpp"
 #include <algorithm>
 
-bool validate_credit_card_number(string number) {
+bool ValidateCreditCardNumber(string number) {
     int length = number.size();
     if (length != 15 && length != 16) {
         return false;
@@ -24,21 +24,21 @@ bool validate_credit_card_number(string number) {
     return (sum % 10 == 0);
 }
 
-bool validate_input_alnum_only(string input) {
+bool ValidateInputAlnumOnly(string input) {
     if (input.size() == 0) {
         return false;
     }
     return std::all_of(input.begin(), input.end(), isalnum); 
 }
 
-bool validate_input_digits_only(string input) {
+bool ValidateInputDigitsOnly(string input) {
     if (input.size() == 0) {
         return false;
     }
     return std::all_of(input.begin(), input.end(), ::isdigit); 
 }
 
-bool validate_input_in_range(string input, int lower, int upper) {
+bool ValidateInputInRange(string input, int lower, int upper) {
     try {
         int input_int = stoi(input);
         return (input_int >= lower && input_int <= upper);
@@ -47,7 +47,7 @@ bool validate_input_in_range(string input, int lower, int upper) {
     }
 }
 
-NewPasswordStatus verify_new_password(string password, string confirm_password) {
+NewPasswordStatus VerifyNewPassword(string password, string confirm_password) {
     if (password.size() < MIN_PASSWORD_LENGTH) {
         return PASS_TOO_SHORT;
     } else if (password.size() > MAX_PASSWORD_LENGTH) {

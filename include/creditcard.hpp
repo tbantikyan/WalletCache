@@ -9,16 +9,16 @@ class CreditCard {
     friend class CreditCardTest;
 
   public:
-    int set_name(string name);
-    int set_card_number(string card_number);
-    int set_cvv(string cvv);
-    int set_month(string month);
-    int set_year(string year);
+    int SetName(string name);
+    int SetCardNumber(string card_number);
+    int SetCvv(string cvv);
+    int SetMonth(string month);
+    int SetYear(string year);
 
-    string get_name();
+    string GetName();
 
-    string format_text();
-    void init_from_text(char *text);
+    string FormatText();
+    void InitFromText(char *text);
 
   private:
     enum CardNetwork {
@@ -29,17 +29,17 @@ class CreditCard {
         CARD_DISCOVER,
     };
 
-    string card_number;
-    string cvv;
-    string month;
-    string year;
-    CardNetwork network;
+    string card_number_;
+    string cvv_;
+    string month_;
+    string year_;
+    CardNetwork network_;
 
-    string name;
-    string default_name;
+    string name_;
+    string default_name_;
 
-    void determine_network();
-    string get_network_string();
+    void DetermineNetwork();
+    string GetNetworkString();
 };
 
 #endif // CREDITCARD_HPP
