@@ -2,7 +2,7 @@
 #define STORE_HPP
 
 #include "creditcard.hpp"
-#include "crypto.hpp"
+#include "icrypto.hpp"
 #include <fstream>
 #include <string>
 #include <vector>
@@ -26,6 +26,7 @@ class Store {
         SAVE_STORE_COMMIT_TEMP_ERR,
     };
 
+    explicit Store(std::shared_ptr<ICrypto> crypto);
     ~Store();
 
     auto InitNewStore(unsigned char *password) -> int;
@@ -39,11 +40,12 @@ class Store {
     auto CardsDisplayString() -> std::string;
 
   private:
+    std::shared_ptr<ICrypto> crypto_;
     std::vector<struct CreditCard *> cards_;
 
-    unsigned char hashed_password_[HASH_LEN];
-    unsigned char salt_[SALT_LEN];
-    unsigned char encryption_key_[ENCYRPTION_KEY_LEN];
+    std::unique_ptr<unsigned char[]> hashed_password_;
+    std::unique_ptr<unsigned char[]> salt_;
+    std::unique_ptr<unsigned char[]> encryption_key_;
 
     const std::string store_file_name_ = "WalletCache.store";
     const std::string tmp_store_file_name_ = "WalletCache.store.tmp";

@@ -1,9 +1,12 @@
 #include "store.hpp"
-#include "crypto.hpp"
+#include "icrypto.hpp"
 #include "utils.hpp"
 
 #include <cstring>
 #include <filesystem>
+#include <utility>
+
+Store::Store(std::shared_ptr<ICrypto> crypto) { this->crypto_ = std::move(crypto); }
 
 Store::~Store() {
     for (CreditCard *card_ptr : this->cards_) {
@@ -14,13 +17,13 @@ Store::~Store() {
 }
 
 auto Store::InitNewStore(unsigned char *password) -> int {
-    unsigned char hash[HASH_LEN];
-    if (HashPassword(hash, password) != 0) {
+    unsigned char hash[this->crypto_->HashLen()];
+    if (this->crypto_->HashPassword(hash, password) != 0) {
         return -1;
     }
 
-    unsigned char salt[SALT_LEN];
-    GenerateSalt(salt);
+    unsigned char salt[this->crypto_->SaltLen()];
+    this->crypto_->GenerateSalt(salt);
 
     if (this->OpenStoreOut(false) != 0) {
         return -1;
@@ -32,13 +35,13 @@ auto Store::InitNewStore(unsigned char *password) -> int {
     }
     this->out_stream_.close();
 
-    Memzero(hash, HASH_LEN);
+    this->crypto_->Memzero(hash, this->crypto_->HashLen());
     return 0;
 }
 
 auto Store::LoadStore(unsigned char *password) -> Store::LoadStoreStatus {
-    unsigned char hash[HASH_LEN];
-    unsigned char salt[SALT_LEN];
+    unsigned char hash[this->crypto_->HashLen()];
+    unsigned char salt[this->crypto_->SaltLen()];
     if (this->OpenStoreIn(false) != 0) {
         return LOAD_STORE_OPEN_ERR;
     }
@@ -47,24 +50,29 @@ auto Store::LoadStore(unsigned char *password) -> Store::LoadStoreStatus {
         return LOAD_STORE_HEADER_READ_ERR;
     }
 
-    if (VerifyPasswordHash(hash, password) != 0) {
+    if (this->crypto_->VerifyPasswordHash(hash, password) != 0) {
         return LOAD_STORE_PWD_VERIFY_ERR;
     }
 
-    unsigned char encryption_key[ENCYRPTION_KEY_LEN];
-    if (DeriveEncryptionKey(encryption_key, ENCYRPTION_KEY_LEN, password, salt) != 0) {
+    unsigned char encryption_key[this->crypto_->EncryptionKeyLen()];
+    if (this->crypto_->DeriveEncryptionKey(encryption_key, this->crypto_->EncryptionKeyLen(), password, salt) != 0) {
         return LOAD_STORE_KEY_DERIVATION_ERR;
     }
 
-    memcpy(this->hashed_password_, hash, HASH_LEN);
-    memcpy(this->salt_, salt, SALT_LEN);
-    memcpy(this->encryption_key_, encryption_key, ENCYRPTION_KEY_LEN);
+    this->hashed_password_ = std::make_unique<unsigned char[]>(this->crypto_->HashLen());
+    std::memcpy(this->hashed_password_.get(), hash, this->crypto_->HashLen());
+
+    this->salt_ = std::make_unique<unsigned char[]>(this->crypto_->SaltLen());
+    std::memcpy(this->salt_.get(), salt, this->crypto_->SaltLen());
+
+    this->encryption_key_ = std::make_unique<unsigned char[]>(this->crypto_->EncryptionKeyLen());
+    std::memcpy(this->encryption_key_.get(), encryption_key, this->crypto_->EncryptionKeyLen());
 
     uintmax_t store_size = this->GetStoreSize(false);
     if (store_size == 0) {
         return LOAD_STORE_DATA_READ_ERR;
     }
-    uintmax_t data_size = store_size - HASH_LEN - SALT_LEN;
+    uintmax_t data_size = store_size - this->crypto_->HashLen() - this->crypto_->SaltLen();
     if (data_size == 0) {
         return LOAD_STORE_VALID;
     }
@@ -78,8 +86,8 @@ auto Store::LoadStore(unsigned char *password) -> Store::LoadStoreStatus {
 
     this->LoadCards(decrypted_data);
 
-    Memzero(encryption_key, ENCYRPTION_KEY_LEN);
-    Memzero(decrypted_data, data_size);
+    this->crypto_->Memzero(encryption_key, this->crypto_->EncryptionKeyLen());
+    this->crypto_->Memzero(decrypted_data, data_size);
     free(decrypted_data);
     this->in_stream_.close();
 
@@ -90,7 +98,7 @@ auto Store::SaveStore() -> Store::SaveStoreStatus {
     if (this->OpenStoreOut(true) != 0) {
         return SAVE_STORE_OPEN_ERR;
     }
-    if (this->WriteHeader(this->hashed_password_, this->salt_) != 0) {
+    if (this->WriteHeader(this->hashed_password_.get(), this->salt_.get()) != 0) {
         this->out_stream_.close();
         return SAVE_STORE_HEADER_ERR;
     }
@@ -102,7 +110,7 @@ auto Store::SaveStore() -> Store::SaveStoreStatus {
         if (this->WriteData(data, data_size) != 0) {
             return SAVE_STORE_WRITE_DATA_ERR;
         }
-        Memzero(data, data_size);
+        this->crypto_->Memzero(data, data_size);
     }
 
     this->out_stream_.close();
@@ -154,16 +162,16 @@ auto Store::ReadHeader(unsigned char *hash, unsigned char *salt) -> int {
         return -1;
     }
 
-    this->in_stream_.read(reinterpret_cast<char *>(hash), HASH_LEN);
+    this->in_stream_.read(reinterpret_cast<char *>(hash), this->crypto_->HashLen());
     if (!this->in_stream_) {
         return -1;
     }
-    this->in_stream_.read(reinterpret_cast<char *>(salt), SALT_LEN);
+    this->in_stream_.read(reinterpret_cast<char *>(salt), this->crypto_->SaltLen());
     if (!this->in_stream_) {
         return -1;
     }
 
-    if (this->in_stream_.tellg() != (HASH_LEN + SALT_LEN)) {
+    if (this->in_stream_.tellg() != (this->crypto_->HashLen() + this->crypto_->SaltLen())) {
         return -1;
     }
 
@@ -171,11 +179,11 @@ auto Store::ReadHeader(unsigned char *hash, unsigned char *salt) -> int {
 }
 
 auto Store::ReadData(unsigned char *decrypted_data, uintmax_t data_size, uint64_t *decrypted_size_actual) -> int {
-    unsigned char header[ENCRYPTION_HEADER_LEN];
-    uintmax_t encrypted_data_size = data_size - ENCRYPTION_HEADER_LEN;
+    unsigned char header[this->crypto_->EncryptionHeaderLen()];
+    uintmax_t encrypted_data_size = data_size - this->crypto_->EncryptionHeaderLen();
     auto *encrypted_data = static_cast<unsigned char *>(malloc(encrypted_data_size));
 
-    this->in_stream_.read(reinterpret_cast<char *>(header), ENCRYPTION_HEADER_LEN);
+    this->in_stream_.read(reinterpret_cast<char *>(header), this->crypto_->EncryptionHeaderLen());
     if (!this->in_stream_) {
         free(encrypted_data);
         return -1;
@@ -186,8 +194,8 @@ auto Store::ReadData(unsigned char *decrypted_data, uintmax_t data_size, uint64_
         return -1;
     }
 
-    if (DecryptBuf(decrypted_data, decrypted_size_actual, header, encrypted_data, encrypted_data_size,
-                   this->encryption_key_) != 0) {
+    if (this->crypto_->DecryptBuf(decrypted_data, decrypted_size_actual, header, encrypted_data, encrypted_data_size,
+                                  this->encryption_key_.get()) != 0) {
         free(encrypted_data);
         return -1;
     }
@@ -202,24 +210,25 @@ auto Store::WriteHeader(const unsigned char *hash, const unsigned char *salt) ->
         return -1;
     }
 
-    this->out_stream_.write(reinterpret_cast<const char *>(hash), HASH_LEN);
-    this->out_stream_.write(reinterpret_cast<const char *>(salt), SALT_LEN);
-    if (this->out_stream_.tellp() != (HASH_LEN + SALT_LEN)) {
+    this->out_stream_.write(reinterpret_cast<const char *>(hash), this->crypto_->HashLen());
+    this->out_stream_.write(reinterpret_cast<const char *>(salt), this->crypto_->SaltLen());
+    if (this->out_stream_.tellp() != (this->crypto_->HashLen() + this->crypto_->SaltLen())) {
         return -1;
     }
 
     return 0;
 }
 
-auto Store::WriteData(unsigned char *data, uintmax_t data_size) -> int {
-    unsigned char header[ENCRYPTION_HEADER_LEN];
-    uint64_t encrypted_len = data_size + ENCRYPTION_ADDED_BYTES;
+auto Store::WriteData(unsigned char *decrypted_data, uintmax_t decrypt_data_size) -> int {
+    unsigned char header[this->crypto_->EncryptionHeaderLen()];
+    uint64_t encrypted_len = decrypt_data_size + this->crypto_->EncryptionAddedBytes();
     auto *encrypted_data = static_cast<unsigned char *>(malloc(encrypted_len));
     if (encrypted_data == nullptr) {
         return -1;
     }
 
-    if (EncryptBuf(encrypted_data, header, data, data_size, this->encryption_key_) != 0) {
+    if (this->crypto_->EncryptBuf(encrypted_data, header, decrypted_data, decrypt_data_size,
+                                  this->encryption_key_.get()) != 0) {
         free(encrypted_data);
         return -1;
     }
@@ -227,7 +236,8 @@ auto Store::WriteData(unsigned char *data, uintmax_t data_size) -> int {
     this->out_stream_.write(reinterpret_cast<const char *>(header), sizeof(header));
     this->out_stream_.write(reinterpret_cast<const char *>(encrypted_data), encrypted_len);
 
-    if (this->out_stream_.tellp() != (HASH_LEN + SALT_LEN + sizeof(header) + encrypted_len)) {
+    if (this->out_stream_.tellp() !=
+        (this->crypto_->HashLen() + this->crypto_->SaltLen() + sizeof(header) + encrypted_len)) {
         free(encrypted_data);
         return -1;
     }

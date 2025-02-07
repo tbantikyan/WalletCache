@@ -1,5 +1,5 @@
 #include "creditcard.hpp"
-#include "crypto.hpp"
+#include "sodiumcrypto.hpp"
 #include "store.hpp"
 #include "ui.hpp"
 #include "verification.hpp"
@@ -42,12 +42,14 @@ void HandlePasswordSetup(UI &ui, unsigned char *password) {
         }
     } while (valid_password != PASS_VALID);
 
-    SecureCpyStrToBuf(input_password, password);
+    memcpy(password, input_password.c_str(), input_password.size());
+    password[input_password.size()] = '\0';
+
     input_password.clear();
     input_confirm.clear();
 }
 
-auto HandleNewProfile(Store &store, UI &ui, bool profile_exists) -> int {
+auto HandleNewProfile(Store &store, UI &ui, const std::shared_ptr<SodiumCrypto> &crypto, bool profile_exists) -> int {
     if (profile_exists) {
         store.DeleteStore(false);
     }
@@ -57,7 +59,7 @@ auto HandleNewProfile(Store &store, UI &ui, bool profile_exists) -> int {
     ui.DisplayHashing();
 
     int res = store.InitNewStore(password);
-    Memzero(password, MAX_PASSWORD_LENGTH + 1);
+    crypto->Memzero(password, MAX_PASSWORD_LENGTH + 1);
     return res;
 }
 
@@ -66,7 +68,8 @@ auto HandleLogin(Store &store, UI &ui) -> Store::LoadStoreStatus {
     ui.PromptLogin(input_password);
 
     unsigned char password[MAX_PASSWORD_LENGTH + 1];
-    SecureCpyStrToBuf(input_password, password);
+    memcpy(password, input_password.c_str(), input_password.size());
+    password[input_password.size()] = '\0';
     return store.LoadStore(password);
 }
 
@@ -151,13 +154,14 @@ auto HandleCardAdd(Store &store, UI &ui) -> int {
 }
 
 auto main() -> int {
-    if (InitCrypto() == -1) {
+    UI ui = UI();
+    std::shared_ptr<SodiumCrypto> sodium_crypto = std::make_shared<SodiumCrypto>(SodiumCrypto());
+    Store store = Store(sodium_crypto);
+
+    if (sodium_crypto->InitCrypto() == -1) {
         std::cerr << "Failed to init crypto.\n";
         return -1;
     }
-
-    UI ui = UI();
-    Store store = Store();
 
     bool logged_in = false;
     std::string status_msg;
@@ -173,7 +177,7 @@ auto main() -> int {
         case UI::OPT_START_EXIT:
             return 0;
         case UI::OPT_START_NEW_PROFILE:
-            if (HandleNewProfile(store, ui, profile_exists) != 0) {
+            if (HandleNewProfile(store, ui, sodium_crypto, profile_exists) != 0) {
                 status_msg = "ERR: Failed to initialize store for new profile\n";
             } else {
                 status_msg = "Successfully created new profile!\n";
