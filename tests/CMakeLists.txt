@@ -26,5 +26,6 @@ endfunction()
 
 # Create test - no need to specify implementation files
 config_test(creditcard_test creditcard_test.cpp)
-config_test(verification_test verification_test.cpp)
+config_test(sodiumcrypto_test sodiumcrypto_test.cpp)
 config_test(ui_test ui_test.cpp)
+config_test(verification_test verification_test.cpp)

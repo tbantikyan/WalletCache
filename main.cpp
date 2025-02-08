@@ -43,7 +43,7 @@ void HandlePasswordSetup(UI &ui, unsigned char *password) {
     } while (valid_password != PASS_VALID);
 
     memcpy(password, input_password.c_str(), input_password.size());
-    password[input_password.size()] = '\0';
+    password[input_password.size()] = 0;
 
     input_password.clear();
     input_confirm.clear();
@@ -69,7 +69,7 @@ auto HandleLogin(Store &store, UI &ui) -> Store::LoadStoreStatus {
 
     unsigned char password[MAX_PASSWORD_LENGTH + 1];
     memcpy(password, input_password.c_str(), input_password.size());
-    password[input_password.size()] = '\0';
+    password[input_password.size()] = 0;
     return store.LoadStore(password);
 }
 

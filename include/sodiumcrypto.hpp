@@ -32,8 +32,6 @@ class SodiumCrypto : public ICrypto {
 
     void Memzero(void *ptr, size_t len) override;
 
-    void SecureCpyStrToBuf(std::string &str, unsigned char *buf) override;
-
   private:
     static const uint64_t ENCRYPTION_ADDED_BYTES = crypto_secretstream_xchacha20poly1305_ABYTES;
     static const uint64_t ENCRYPTION_HEADER_LEN = crypto_secretstream_xchacha20poly1305_HEADERBYTES;
@@ -42,8 +40,8 @@ class SodiumCrypto : public ICrypto {
     static const uint64_t SALT_LEN = crypto_pwhash_SALTBYTES;
 
     static const uint64_t HASH_ALG = crypto_pwhash_ALG_ARGON2ID13;
-    static const uint64_t OPS_LIMIT = crypto_pwhash_OPSLIMIT_SENSITIVE;
-    static const uint64_t MEM_LIMIT = crypto_pwhash_MEMLIMIT_SENSITIVE;
+    static const uint64_t OPS_LIMIT = crypto_pwhash_OPSLIMIT_MODERATE;
+    static const uint64_t MEM_LIMIT = crypto_pwhash_MEMLIMIT_MODERATE;
 };
 
 #endif // SODIUMCRYPTO_HPP

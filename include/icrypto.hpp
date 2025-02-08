@@ -27,7 +27,6 @@ class ICrypto {
     virtual auto VerifyPasswordHash(const unsigned char *hash, const unsigned char *password) -> int = 0;
 
     virtual void Memzero(void *ptr, size_t len) = 0;
-    virtual void SecureCpyStrToBuf(std::string &str, unsigned char *buf) = 0;
 };
 
 #endif // ICRYPTO_HPP

@@ -81,8 +81,3 @@ auto SodiumCrypto::VerifyPasswordHash(const unsigned char *hash, const unsigned 
 void SodiumCrypto::GenerateSalt(unsigned char *salt) { randombytes_buf(reinterpret_cast<char *>(salt), SALT_LEN); }
 
 void SodiumCrypto::Memzero(void *const ptr, const size_t len) { sodium_memzero(ptr, len); }
-
-void SodiumCrypto::SecureCpyStrToBuf(std::string &str, unsigned char *buf) {
-    memcpy(buf, str.c_str(), str.size());
-    buf[str.size()] = '\0';
-}
