@@ -4,6 +4,7 @@
 #include "ui.hpp"
 #include "verification.hpp"
 
+#include <cstring>
 #include <iostream>
 
 auto CheckProfileReplacement(UI ui, bool profile_exists, UI::StartMenuOption input) -> int {
