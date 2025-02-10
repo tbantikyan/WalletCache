@@ -1,6 +1,8 @@
 #include "creditcard.hpp"
 #include "verification.hpp"
 
+#include <cstring>
+
 auto CreditCard::SetName(const std::string &name) -> int {
     if (!name.empty() && !ValidateInputAlnumOnly(name)) {
         return -1;
@@ -115,7 +117,7 @@ void CreditCard::DetermineNetwork() {
 
 auto CreditCard::GetNetworkString() -> std::string {
     switch (this->network_) {
-    case CreditCard::CARD_OTHER:
+    case CARD_OTHER:
         return "Other";
     case CARD_VISA:
         return "Visa";
@@ -125,5 +127,7 @@ auto CreditCard::GetNetworkString() -> std::string {
         return "American Express";
     case CARD_DISCOVER:
         return "Discover";
+    default:
+        return "Unknown Network";
     }
 }

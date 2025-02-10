@@ -1,7 +1,7 @@
 #ifndef ICRYPTO_HPP
 #define ICRYPTO_HPP
 
-#include <_types/_uintmax_t.h>
+#include <cstdint>
 #include <cstdlib>
 #include <string>
 

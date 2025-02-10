@@ -3,7 +3,9 @@
 
 #include "creditcard.hpp"
 #include "icrypto.hpp"
+
 #include <fstream>
+#include <memory>
 #include <string>
 #include <vector>
 
