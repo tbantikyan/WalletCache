@@ -32,7 +32,7 @@ auto SodiumCrypto::EncryptBuf(unsigned char *out_data, unsigned char *header, co
     crypto_secretstream_xchacha20poly1305_init_push(&state, header, key);
     uint64_t out_len = 0;
     crypto_secretstream_xchacha20poly1305_push(&state, out_data,
-                                               static_cast<unsigned long long *>(&out_len), // NOLINT
+                                               reinterpret_cast<unsigned long long *>(&out_len), // NOLINT
                                                buf, buf_len, nullptr, 0,
                                                crypto_secretstream_xchacha20poly1305_TAG_FINAL);
     if (out_len != buf_len + crypto_secretstream_xchacha20poly1305_ABYTES) {
@@ -61,7 +61,7 @@ auto SodiumCrypto::DecryptBuf(unsigned char *out_data, uint64_t *out_len, unsign
 
     unsigned char tag;
     if (crypto_secretstream_xchacha20poly1305_pull(&state, out_data,
-                                                   static_cast<unsigned long long *>(out_len), // NOLINT
+                                                   reinterpret_cast<unsigned long long *>(out_len), // NOLINT
                                                    &tag, encrypted_buf, buf_len, nullptr, 0) != 0) {
         return -1;
     }
