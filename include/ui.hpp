@@ -3,6 +3,39 @@
 
 #include <string>
 
+struct UIStrings {
+    static const inline std::string WELCOME = "Welcome to WalletCache\n\n";
+    static const inline std::string SELECT_OPT = "Select an option below:\n";
+
+    static const inline std::string START_MENU_EXIT = "[0]: EXIT\n";
+    static const inline std::string START_MENU_CREATE_PROFILE = "[1]: CREATE NEW PROFILE\n";
+    static const inline std::string START_MENU_LOGIN_PROFILE = "[2]: LOGIN TO EXISTING PROFILE\n";
+
+    static const inline std::string CREATE_PROFILE_MENU_PASSWORD = "Enter a master password:\n";
+    static const inline std::string CREATE_PROFILE_MENU_CONFIRM_PASSWORD = "Confirm your master password:\n";
+
+    static const inline std::string PROFILE_MENU_EXIT = "[0]: EXIT\n";
+    static const inline std::string PROFILE_MENU_LIST = "[1]: LIST\n";
+    static const inline std::string PROFILE_MENU_ADD = "[2]: ADD\n";
+    static const inline std::string PROFILE_MENU_DELETE = "[3]: DELETE\n";
+
+    static const inline std::string HASHING = "\nHashing...\n";
+
+    static const inline std::string CARD_CVV_PROMPT = "Enter card cvv (or 0 to cancel):\n";
+    static const inline std::string CARD_MONTH_PROMPT = "Enter card expiration month [Ex: 10 for october] (or 0 to cancel):\n";
+    static const inline std::string CARD_NAME_PROMPT = "Optional: enter a name for the card using only letters or numbers (or 0 "
+                                         "to cancel):\n";
+    static const inline std::string CARD_NUMBER_PROMPT = "Enter card number (or 0 to cancel):\n";
+    static const inline std::string CARD_YEAR_PROMPT = "Enter card expiration year [Ex: 2025] (or 0 to cancel):\n";
+
+    static const inline std::string PASSWORD_PROMPT = "Enter the profile master password:\n";
+
+    static const inline std::string CONFIRMATION_CANCEL = "[0] CANCEL\n";
+    static const inline std::string CONFIRMATION_CONFIRM = "[1] CONFIRM\n";
+
+    static const inline std::string REQUEST_VALID_INPUT = "Please input a number corresponding to available options.\n";
+};
+
 class UI {
     friend class UITest;
 

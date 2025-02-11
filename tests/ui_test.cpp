@@ -31,15 +31,15 @@ class UITest : public ::testing::Test {
 
 // StartMenu
 void ExpectStartMenuOutput(const std::string &output, bool profile_exists) {
-    EXPECT_NE(output.find("Welcome to WalletCache"), std::string::npos);
-    EXPECT_NE(output.find("Select an option below:"), std::string::npos);
-    EXPECT_NE(output.find("  (0): EXIT"), std::string::npos);
-    EXPECT_NE(output.find("  (1): CREATE NEW PROFILE"), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::WELCOME), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::SELECT_OPT), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::START_MENU_EXIT), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::START_MENU_CREATE_PROFILE), std::string::npos);
 
     if (profile_exists) {
-        EXPECT_NE(output.find("  (2): LOGIN TO EXISTING PROFILE"), std::string::npos);
+        EXPECT_NE(output.find(UIStrings::START_MENU_LOGIN_PROFILE), std::string::npos);
     } else {
-        EXPECT_EQ(output.find("  (2): LOGIN TO EXISTING PROFILE"), std::string::npos);
+        EXPECT_EQ(output.find(UIStrings::START_MENU_LOGIN_PROFILE), std::string::npos);
     }
 }
 
@@ -133,8 +133,8 @@ TEST_F(UITest, CreateProfileMenu_MatchingPassword_DisplaysMessages) {
     ui.CreateProfileMenu(error_msg, password, confirm_password);
 
     std::string output = output_stream_.str();
-    EXPECT_NE(output.find("Enter a master password:"), std::string::npos);
-    EXPECT_NE(output.find("Confirm master password:"), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::CREATE_PROFILE_MENU_PASSWORD), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::CREATE_PROFILE_MENU_CONFIRM_PASSWORD), std::string::npos);
     EXPECT_EQ(output.find("testpass"),
               std::string::npos); // Shouldn't output password
     EXPECT_EQ(password, "testpass");
@@ -151,8 +151,8 @@ TEST_F(UITest, CreateProfileMenu_DifferentPassword_DisplaysMessages) {
     ui.CreateProfileMenu(error_msg, password, confirm_password);
 
     std::string output = output_stream_.str();
-    EXPECT_NE(output.find("Enter a master password:"), std::string::npos);
-    EXPECT_NE(output.find("Confirm master password:"), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::CREATE_PROFILE_MENU_PASSWORD), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::CREATE_PROFILE_MENU_CONFIRM_PASSWORD), std::string::npos);
     EXPECT_EQ(output.find("testpass"),
               std::string::npos); // Shouldn't output password
     EXPECT_EQ(output.find("diffpass"),
@@ -163,12 +163,12 @@ TEST_F(UITest, CreateProfileMenu_DifferentPassword_DisplaysMessages) {
 
 // ProfileMenu
 void ExpectProfileMenuOutput(const std::string &output) {
-    EXPECT_NE(output.find("Welcome to WalletCache"), std::string::npos);
-    EXPECT_NE(output.find("Select an option below:"), std::string::npos);
-    EXPECT_NE(output.find("  (0): EXIT"), std::string::npos);
-    EXPECT_NE(output.find("  (1): LIST"), std::string::npos);
-    EXPECT_NE(output.find("  (2): ADD"), std::string::npos);
-    EXPECT_NE(output.find("  (3): DELETE"), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::WELCOME), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::SELECT_OPT), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::PROFILE_MENU_EXIT), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::PROFILE_MENU_LIST), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::PROFILE_MENU_ADD), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::PROFILE_MENU_DELETE), std::string::npos);
 }
 
 TEST_F(UITest, ProfileMenu_InputExit) {
@@ -247,7 +247,7 @@ TEST_F(UITest, DisplayHashing_ShowsCorrectMessage) {
     UI ui;
     ui.DisplayHashing();
 
-    EXPECT_EQ(output_stream_.str(), "\nHashing...\n");
+    EXPECT_EQ(output_stream_.str(), UIStrings::HASHING);
 }
 
 // PromptCardCvv
@@ -259,7 +259,7 @@ TEST_F(UITest, PromptCardCvv_InputName) {
 
     ui.PromptCardCvv(error_msg, cvv);
 
-    EXPECT_NE(output_stream_.str().find("Enter card CVV (or 0 to cancel):"), std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::CARD_CVV_PROMPT), std::string::npos);
     EXPECT_EQ(cvv, "101");
 }
 
@@ -271,7 +271,7 @@ TEST_F(UITest, PromptCardCvv_InputEmptyNumber) {
 
     ui.PromptCardCvv(error_msg, cvv);
 
-    EXPECT_NE(output_stream_.str().find("Enter card CVV (or 0 to cancel):"), std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::CARD_CVV_PROMPT), std::string::npos);
     EXPECT_EQ(cvv, "");
 }
 
@@ -284,7 +284,7 @@ TEST_F(UITest, PromptCardCvv_InputWithErrorMessage) {
     ui.PromptCardCvv(error_msg, cvv);
 
     std::string output = output_stream_.str();
-    EXPECT_NE(output_stream_.str().find("Enter card CVV (or 0 to cancel):"), std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::CARD_CVV_PROMPT), std::string::npos);
     EXPECT_NE(output.find("ERR: Test Error!"), std::string::npos);
     EXPECT_EQ(cvv, "211");
 }
@@ -298,8 +298,7 @@ TEST_F(UITest, PromptCardMonth_InputName) {
 
     ui.PromptCardMonth(error_msg, month);
 
-    EXPECT_NE(output_stream_.str().find("Enter card expiration month [ex: 10 for October] (or 0 to cancel):"),
-              std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::CARD_MONTH_PROMPT), std::string::npos);
     EXPECT_EQ(month, "10");
 }
 
@@ -311,8 +310,7 @@ TEST_F(UITest, PromptCardMonth_InputEmptyNumber) {
 
     ui.PromptCardMonth(error_msg, month);
 
-    EXPECT_NE(output_stream_.str().find("Enter card expiration month [ex: 10 for October] (or 0 to cancel):"),
-              std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::CARD_MONTH_PROMPT), std::string::npos);
     EXPECT_EQ(month, "");
 }
 
@@ -325,8 +323,7 @@ TEST_F(UITest, PromptCardMonth_InputWithErrorMessage) {
     ui.PromptCardMonth(error_msg, month);
 
     std::string output = output_stream_.str();
-    EXPECT_NE(output_stream_.str().find("Enter card expiration month [ex: 10 for October] (or 0 to cancel):"),
-              std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::CARD_MONTH_PROMPT), std::string::npos);
     EXPECT_NE(output.find("ERR: Test Error!"), std::string::npos);
     EXPECT_EQ(month, "11");
 }
@@ -340,9 +337,7 @@ TEST_F(UITest, PromptCardName_InputName) {
 
     ui.PromptCardName(error_msg, name);
 
-    EXPECT_NE(output_stream_.str().find("Optional: enter a name for the card [only "
-                                        "letters or numbers] (or 0 to cancel):"),
-              std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::CARD_NAME_PROMPT), std::string::npos);
     EXPECT_EQ(name, "Venture One");
 }
 
@@ -354,9 +349,7 @@ TEST_F(UITest, PromptCardName_InputEmptyName) {
 
     ui.PromptCardName(error_msg, name);
 
-    EXPECT_NE(output_stream_.str().find("Optional: enter a name for the card [only "
-                                        "letters or numbers] (or 0 to cancel):"),
-              std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::CARD_NAME_PROMPT), std::string::npos);
     EXPECT_EQ(name, "");
 }
 
@@ -369,9 +362,7 @@ TEST_F(UITest, PromptCardName_InputWithErrorMessage) {
     ui.PromptCardName(error_msg, name);
 
     std::string output = output_stream_.str();
-    EXPECT_NE(output_stream_.str().find("Optional: enter a name for the card [only "
-                                        "letters or numbers] (or 0 to cancel):"),
-              std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::CARD_NAME_PROMPT), std::string::npos);
     EXPECT_NE(output.find("ERR: Test Error!"), std::string::npos);
     EXPECT_EQ(name, "BofA Cash");
 }
@@ -385,7 +376,7 @@ TEST_F(UITest, PromptCardNumber_InputNumber) {
 
     ui.PromptCardNumber(error_msg, number);
 
-    EXPECT_NE(output_stream_.str().find("Enter card number"), std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::CARD_NUMBER_PROMPT), std::string::npos);
     EXPECT_EQ(number, "1111111111111111");
 }
 
@@ -397,7 +388,7 @@ TEST_F(UITest, PromptCardNumber_InputEmptyNumber) {
 
     ui.PromptCardNumber(error_msg, number);
 
-    EXPECT_NE(output_stream_.str().find("Enter card number"), std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::CARD_NUMBER_PROMPT), std::string::npos);
     EXPECT_EQ(number, "");
 }
 
@@ -410,7 +401,7 @@ TEST_F(UITest, PromptCardNumber_InputWithErrorMessage) {
     ui.PromptCardNumber(error_msg, number);
 
     std::string output = output_stream_.str();
-    EXPECT_NE(output.find("Enter card number"), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::CARD_NUMBER_PROMPT), std::string::npos);
     EXPECT_NE(output.find("ERR: Test Error!"), std::string::npos);
     EXPECT_EQ(number, "1111111111111111");
 }
@@ -424,7 +415,7 @@ TEST_F(UITest, PromptCardYear_InputYear) {
 
     ui.PromptCardYear(error_msg, year);
 
-    EXPECT_NE(output_stream_.str().find("Enter card expiration year [ex: 2025] (or 0 to cancel):"), std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::CARD_YEAR_PROMPT), std::string::npos);
     EXPECT_EQ(year, "1000");
 }
 
@@ -436,7 +427,7 @@ TEST_F(UITest, PromptCardYear_InputEmptyYear) {
 
     ui.PromptCardYear(error_msg, year);
 
-    EXPECT_NE(output_stream_.str().find("Enter card expiration year [ex: 2025] (or 0 to cancel):"), std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::CARD_YEAR_PROMPT), std::string::npos);
     EXPECT_EQ(year, "");
 }
 
@@ -449,7 +440,7 @@ TEST_F(UITest, PromptCardYear_InputWithErrorMessage) {
     ui.PromptCardYear(error_msg, year);
 
     std::string output = output_stream_.str();
-    EXPECT_NE(output.find("Enter card expiration year [ex: 2025] (or 0 to cancel):"), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::CARD_YEAR_PROMPT), std::string::npos);
     EXPECT_NE(output.find("ERR: Test Error!"), std::string::npos);
     EXPECT_EQ(year, "1000");
 }
@@ -463,7 +454,7 @@ TEST_F(UITest, PromptLogin_InputPassword) {
     ui.PromptLogin(password);
 
     std::string output = output_stream_.str();
-    EXPECT_NE(output.find("Enter profile password:"), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::PASSWORD_PROMPT), std::string::npos);
     EXPECT_EQ(output.find("s3cr3tP@ss"),
               std::string::npos); // Shouldn't output password
     EXPECT_EQ(password, "s3cr3tP@ss");
@@ -476,7 +467,7 @@ TEST_F(UITest, PromptLogin_EmptyPassword) {
 
     ui.PromptLogin(password);
 
-    EXPECT_NE(output_stream_.str().find("Enter profile password:"), std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::PASSWORD_PROMPT), std::string::npos);
     EXPECT_EQ(password, "");
 }
 
@@ -492,8 +483,8 @@ TEST_F(UITest, PromptConfirmation_Outputs) {
 
     std::string output = output_stream_.str();
     EXPECT_TRUE(output.find("Do you want to proceed?") != std::string::npos);
-    EXPECT_TRUE(output.find("(  0) Cancel") != std::string::npos);
-    EXPECT_TRUE(output.find("(  1) Confirm") != std::string::npos);
+    EXPECT_TRUE(output.find(UIStrings::CONFIRMATION_CANCEL) != std::string::npos);
+    EXPECT_TRUE(output.find(UIStrings::CONFIRMATION_CONFIRM) != std::string::npos);
 }
 
 // GetSelection
@@ -522,8 +513,7 @@ TEST_F(UITest, GetSelection_InvalidNumericInput) {
     int result = TestGetSelection(ui, 0, 1);
 
     EXPECT_EQ(result, 1);
-    EXPECT_TRUE(output_stream_.str().find("Please input a number corresponding to available options.") !=
-                std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::REQUEST_VALID_INPUT), std::string::npos);
 }
 
 TEST_F(UITest, GetSelection_InvalidNegativeNumericInput) {
@@ -533,8 +523,7 @@ TEST_F(UITest, GetSelection_InvalidNegativeNumericInput) {
     int result = TestGetSelection(ui, 0, 1);
 
     EXPECT_EQ(result, 1);
-    EXPECT_TRUE(output_stream_.str().find("Please input a number corresponding to available options.") !=
-                std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::REQUEST_VALID_INPUT), std::string::npos);
 }
 
 TEST_F(UITest, GetSelection_InvalidTextInput) {
@@ -544,8 +533,7 @@ TEST_F(UITest, GetSelection_InvalidTextInput) {
     int result = TestGetSelection(ui, 0, 1);
 
     EXPECT_EQ(result, 1);
-    EXPECT_TRUE(output_stream_.str().find("Please input a number corresponding to available options.") !=
-                std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::REQUEST_VALID_INPUT), std::string::npos);
 }
 
 TEST_F(UITest, GetSelection_EmptyInput) {
@@ -555,6 +543,5 @@ TEST_F(UITest, GetSelection_EmptyInput) {
     int result = TestGetSelection(ui, 0, 1);
 
     EXPECT_EQ(result, 1);
-    EXPECT_TRUE(output_stream_.str().find("Please input a number corresponding to available options.") !=
-                std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::REQUEST_VALID_INPUT), std::string::npos);
 }
