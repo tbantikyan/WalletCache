@@ -6,8 +6,10 @@
 
 class IFileIO {
   public:
-    virtual void Read(char *buf, int64_t stream_size) = 0;
-    virtual void WriteTemp(char *buf, int64_t stream_size) = 0;
+    virtual ~IFileIO() = 0;
+
+    virtual auto Read(char *buf, int64_t stream_size) -> bool = 0;
+    virtual auto WriteTemp(const char *buf, int64_t stream_size) -> bool = 0;
     virtual auto CommitTemp() -> int = 0;
 
     virtual auto OpenRead() -> int = 0;

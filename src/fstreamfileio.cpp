@@ -5,9 +5,13 @@
 
 FStreamFileIO::FStreamFileIO(const std::string &file_path) : FILE_PATH(file_path), TMP_FILE_PATH(file_path + ".tmp") {}
 
-void FStreamFileIO::Read(char *buf, int64_t stream_size) { this->in_stream_.read(buf, stream_size); }
+auto FStreamFileIO::Read(char *buf, int64_t stream_size) -> bool {
+    return !!this->in_stream_.read(buf, stream_size); // Note: '!!' so that true indicates NO error
+}
 
-void FStreamFileIO::WriteTemp(char *buf, int64_t stream_size) { this->out_stream_.write(buf, stream_size); }
+auto FStreamFileIO::WriteTemp(const char *buf, int64_t stream_size) -> bool {
+    return !!this->out_stream_.write(buf, stream_size); // Note: '!!' so that true indicates NO error
+}
 
 auto FStreamFileIO::CommitTemp() -> int {
     if (!this->GetExists(false)) {

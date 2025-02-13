@@ -11,9 +11,10 @@
 class FStreamFileIO : IFileIO {
   public:
     explicit FStreamFileIO(const std::string &file_path);
+    ~FStreamFileIO() override = default;
 
-    void Read(char *buf, int64_t stream_size) override;
-    void WriteTemp(char *buf, int64_t stream_size) override;
+    auto Read(char *buf, int64_t stream_size) -> bool override;
+    auto WriteTemp(const char *buf, int64_t stream_size) -> bool override;
     auto CommitTemp() -> int override;
 
     auto OpenRead() -> int override;
