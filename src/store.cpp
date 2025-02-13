@@ -332,7 +332,7 @@ auto Store::GetStorePath(std::string &path, bool is_tmp) -> int {
         return -1;
     }
 
-    std::string file = is_tmp ? this->tmp_store_file_name_ : this->store_file_name_;
+    std::string file = is_tmp ? this->TMP_STORE_FILE_NAME : this->STORE_FILE_NAME;
     path = GetFilePath(homepath, file);
     return 0;
 }
