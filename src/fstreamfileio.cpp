@@ -53,7 +53,7 @@ auto FStreamFileIO::OpenRead() -> int {
 
 auto FStreamFileIO::OpenWriteTemp() -> int {
     try {
-        this->in_stream_.open(this->TMP_FILE_PATH, std::ios::binary);
+        this->out_stream_.open(this->TMP_FILE_PATH, std::ios::binary);
     } catch (...) {
         return -1;
     }
