@@ -6,7 +6,7 @@
 
 class IFileIO {
   public:
-    virtual ~IFileIO() = 0;
+    virtual ~IFileIO() = default;
 
     virtual auto Read(char *buf, int64_t stream_size) -> bool = 0;
     virtual auto WriteTemp(const char *buf, int64_t stream_size) -> bool = 0;
