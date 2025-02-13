@@ -8,7 +8,7 @@
 #include <ios>
 #include <string>
 
-class FStreamFileIO : IFileIO {
+class FStreamFileIO : public IFileIO {
   public:
     explicit FStreamFileIO(const std::string &file_path);
     ~FStreamFileIO() override = default;
