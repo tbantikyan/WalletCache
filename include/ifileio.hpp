@@ -19,6 +19,7 @@ class IFileIO {
     virtual auto GetPositionRead() -> int64_t = 0;
     virtual auto GetPositionWriteTemp() -> int64_t = 0;
 
+    virtual auto GetSize(bool temp) -> uintmax_t = 0;
     virtual auto GetExists(bool temp) -> bool = 0;
     virtual auto Delete(bool temp) -> bool = 0; 
 };

@@ -25,6 +25,7 @@ class FStreamFileIO : IFileIO {
     auto GetPositionRead() -> int64_t override;
     auto GetPositionWriteTemp() -> int64_t override;
 
+    auto GetSize(bool temp) -> uintmax_t override;
     auto GetExists(bool temp) -> bool override;
     auto Delete(bool temp) -> bool override;
 

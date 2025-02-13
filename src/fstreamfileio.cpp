@@ -65,6 +65,14 @@ auto FStreamFileIO::GetPositionRead() -> int64_t { return this->in_stream_.tellg
 
 auto FStreamFileIO::GetPositionWriteTemp() -> int64_t { return this->out_stream_.tellp(); }
 
+auto FStreamFileIO::GetSize(bool temp) -> uintmax_t {
+    try {
+        return temp ? std::filesystem::file_size(this->TMP_FILE_PATH) : std::filesystem::file_size(this->FILE_PATH);
+    } catch (...) {
+        return 0;
+    }
+}
+
 auto FStreamFileIO::GetExists(bool temp) -> bool {
     return temp ? CheckFileExists(this->TMP_FILE_PATH) : CheckFileExists(this->FILE_PATH);
 }
