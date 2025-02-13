@@ -49,8 +49,8 @@ class Store {
     std::unique_ptr<unsigned char[]> salt_;
     std::unique_ptr<unsigned char[]> encryption_key_;
 
-    const std::string store_file_name_ = "WalletCache.store";
-    const std::string tmp_store_file_name_ = "WalletCache.store.tmp";
+    const std::string STORE_FILE_NAME = "WalletCache.store";
+    const std::string TMP_STORE_FILE_NAME = "WalletCache.store.tmp";
 
     std::ifstream in_stream_;
     std::ofstream out_stream_;
