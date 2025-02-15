@@ -48,7 +48,7 @@ auto FStreamFileIO::OpenRead() -> int {
         return -1;
     }
 
-    return 0;
+    return this->in_stream_.is_open() ? 0 : -1;
 }
 
 auto FStreamFileIO::OpenWriteTemp() -> int {

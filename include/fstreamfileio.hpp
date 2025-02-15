@@ -9,6 +9,8 @@
 #include <string>
 
 class FStreamFileIO : public IFileIO {
+    friend class FStreamFileIOTest;
+
   public:
     explicit FStreamFileIO(const std::string &file_path);
     ~FStreamFileIO() override = default;
