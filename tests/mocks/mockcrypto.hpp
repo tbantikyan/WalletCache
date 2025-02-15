@@ -1,3 +1,6 @@
+#ifndef MOCKCRYPTO_HPP 
+#define MOCKCRYPTO_HPP 
+
 #include "icrypto.hpp"
 
 #include <gmock/gmock.h>
@@ -23,3 +26,5 @@ class MockCrypto : public ICrypto {
     MOCK_METHOD(int, VerifyPasswordHash, (const unsigned char *, const unsigned char *), (override));
     MOCK_METHOD(void, Memzero, (void *, size_t), (override));
 };
+
+#endif // MOCKCRYPTO_HPP
