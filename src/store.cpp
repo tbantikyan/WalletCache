@@ -32,7 +32,6 @@ auto Store::InitNewStore(unsigned char *password) -> int {
         return -1;
     }
     if (this->WriteHeader(hash, salt) != 0) {
-        this->fileio_->CloseWriteTemp();
         return -1;
     }
     this->fileio_->CloseWriteTemp();
