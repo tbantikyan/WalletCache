@@ -58,7 +58,7 @@ auto FStreamFileIO::OpenWriteTemp() -> int {
         return -1;
     }
 
-    return 0;
+    return this->out_stream_.is_open() ? 0 : -1;
 }
 
 void FStreamFileIO::CloseRead() { this->in_stream_.close(); }
