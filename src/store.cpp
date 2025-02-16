@@ -32,6 +32,7 @@ auto Store::InitNewStore(unsigned char *password) -> int {
         return -1;
     }
     if (this->WriteHeader(hash, salt) != 0) {
+        this->fileio_->CloseWriteTemp();
         return -1;
     }
     this->fileio_->CloseWriteTemp();
@@ -181,7 +182,6 @@ auto Store::ReadData(unsigned char *decrypted_data, uintmax_t data_size, uint64_
 
 auto Store::WriteHeader(const unsigned char *hash, const unsigned char *salt) -> int {
     if (this->fileio_->GetPositionWriteTemp() != 0) {
-        this->fileio_->CloseWriteTemp();
         return -1;
     }
 
