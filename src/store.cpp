@@ -49,15 +49,18 @@ auto Store::LoadStore(unsigned char *password) -> Store::LoadStoreStatus {
     }
 
     if (this->ReadHeader(hash, salt) != 0) {
+        this->fileio_->CloseRead();
         return LOAD_STORE_HEADER_READ_ERR;
     }
 
     if (this->crypto_->VerifyPasswordHash(hash, password) != 0) {
+        this->fileio_->CloseRead();
         return LOAD_STORE_PWD_VERIFY_ERR;
     }
 
     unsigned char encryption_key[this->crypto_->EncryptionKeyLen()];
     if (this->crypto_->DeriveEncryptionKey(encryption_key, this->crypto_->EncryptionKeyLen(), password, salt) != 0) {
+        this->fileio_->CloseRead();
         return LOAD_STORE_KEY_DERIVATION_ERR;
     }
 
@@ -69,31 +72,33 @@ auto Store::LoadStore(unsigned char *password) -> Store::LoadStoreStatus {
 
     this->encryption_key_ = std::make_unique<unsigned char[]>(this->crypto_->EncryptionKeyLen());
     std::memcpy(this->encryption_key_.get(), encryption_key, this->crypto_->EncryptionKeyLen());
+    this->crypto_->Memzero(encryption_key, this->crypto_->EncryptionKeyLen());
 
     uintmax_t store_size = this->fileio_->GetSize(false);
     if (store_size == 0) {
+        this->fileio_->CloseRead();
         return LOAD_STORE_DATA_READ_ERR;
     }
     uintmax_t data_size = store_size - this->crypto_->HashLen() - this->crypto_->SaltLen();
     if (data_size == 0) {
+        this->fileio_->CloseRead();
         return LOAD_STORE_VALID;
     }
 
     auto *decrypted_data = static_cast<unsigned char *>(malloc(data_size));
     uint64_t decrypted_size_actual;
-    if (this->ReadData(decrypted_data, data_size, &decrypted_size_actual) != 0) {
-        return LOAD_STORE_DATA_DECRYPT_ERR;
+    int data_read_status = this->ReadData(decrypted_data, data_size, &decrypted_size_actual);
+    LoadStoreStatus return_status = LOAD_STORE_DATA_DECRYPT_ERR;
+    if (data_read_status == 0) {
+        return_status = LOAD_STORE_VALID;
+        decrypted_data[decrypted_size_actual] = 0;
+        this->LoadCards(decrypted_data);
     }
-    decrypted_data[decrypted_size_actual] = 0;
 
-    this->LoadCards(decrypted_data);
-
-    this->crypto_->Memzero(encryption_key, this->crypto_->EncryptionKeyLen());
     this->crypto_->Memzero(decrypted_data, data_size);
     free(decrypted_data);
     this->fileio_->CloseRead();
-
-    return LOAD_STORE_VALID;
+    return return_status;
 }
 
 auto Store::SaveStore() -> Store::SaveStoreStatus {
