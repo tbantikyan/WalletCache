@@ -75,7 +75,7 @@ auto Store::LoadStore(unsigned char *password) -> Store::LoadStoreStatus {
     this->crypto_->Memzero(encryption_key, this->crypto_->EncryptionKeyLen());
 
     uintmax_t store_size = this->fileio_->GetSize(false);
-    if (store_size == 0) {
+    if (store_size < this->crypto_->HashLen() + this->crypto_->SaltLen()) {
         this->fileio_->CloseRead();
         return LOAD_STORE_DATA_READ_ERR;
     }
