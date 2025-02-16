@@ -110,6 +110,7 @@ auto Store::SaveStore() -> Store::SaveStoreStatus {
         unsigned char data[data_size];
         this->CardsFormatted(data);
         if (this->WriteData(data, data_size) != 0) {
+            this->fileio_->CloseWriteTemp();
             return SAVE_STORE_WRITE_DATA_ERR;
         }
         this->crypto_->Memzero(data, data_size);
