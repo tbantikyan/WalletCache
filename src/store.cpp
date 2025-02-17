@@ -250,6 +250,10 @@ auto Store::CardsFormatted(unsigned char *buf) -> uintmax_t {
 }
 
 void Store::LoadCards(unsigned char *data) {
+    if (data == nullptr) {
+        return; 
+    }
+
     char *rest = nullptr;
     char *portion = strtok_r(reinterpret_cast<char *>(data), ";", &rest);
 
