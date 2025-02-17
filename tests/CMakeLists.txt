@@ -15,10 +15,12 @@ function(config_test test_name test_source)
     target_link_libraries(${test_name} PRIVATE
         WalletCacheLib  # Our core library
         GTest::gtest_main
+        GTest::gmock
     )
     
     target_include_directories(${test_name} PRIVATE
         ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/mocks
     )
     
     gtest_discover_tests(${test_name})
@@ -27,6 +29,7 @@ endfunction()
 # Create test - no need to specify implementation files
 config_test(creditcard_test creditcard_test.cpp)
 config_test(fstreamfileio_test fstreamfileio_test.cpp)
+config_test(store_test store_test.cpp)
 config_test(sodiumcrypto_test sodiumcrypto_test.cpp)
 config_test(ui_test ui_test.cpp)
 config_test(verification_test verification_test.cpp)

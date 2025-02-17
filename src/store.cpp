@@ -29,15 +29,17 @@ auto Store::InitNewStore(unsigned char *password) -> int {
     this->crypto_->GenerateSalt(salt);
 
     if (this->fileio_->OpenWriteTemp() != 0) {
+        this->crypto_->Memzero(hash, this->crypto_->HashLen());
         return -1;
     }
     if (this->WriteHeader(hash, salt) != 0) {
+        this->crypto_->Memzero(hash, this->crypto_->HashLen());
         this->fileio_->CloseWriteTemp();
         return -1;
     }
+    this->crypto_->Memzero(hash, this->crypto_->HashLen());
     this->fileio_->CloseWriteTemp();
 
-    this->crypto_->Memzero(hash, this->crypto_->HashLen());
     return this->fileio_->CommitTemp();
 }
 
@@ -49,15 +51,18 @@ auto Store::LoadStore(unsigned char *password) -> Store::LoadStoreStatus {
     }
 
     if (this->ReadHeader(hash, salt) != 0) {
+        this->fileio_->CloseRead();
         return LOAD_STORE_HEADER_READ_ERR;
     }
 
     if (this->crypto_->VerifyPasswordHash(hash, password) != 0) {
+        this->fileio_->CloseRead();
         return LOAD_STORE_PWD_VERIFY_ERR;
     }
 
     unsigned char encryption_key[this->crypto_->EncryptionKeyLen()];
     if (this->crypto_->DeriveEncryptionKey(encryption_key, this->crypto_->EncryptionKeyLen(), password, salt) != 0) {
+        this->fileio_->CloseRead();
         return LOAD_STORE_KEY_DERIVATION_ERR;
     }
 
@@ -69,31 +74,33 @@ auto Store::LoadStore(unsigned char *password) -> Store::LoadStoreStatus {
 
     this->encryption_key_ = std::make_unique<unsigned char[]>(this->crypto_->EncryptionKeyLen());
     std::memcpy(this->encryption_key_.get(), encryption_key, this->crypto_->EncryptionKeyLen());
+    this->crypto_->Memzero(encryption_key, this->crypto_->EncryptionKeyLen());
 
     uintmax_t store_size = this->fileio_->GetSize(false);
-    if (store_size == 0) {
+    if (store_size < this->crypto_->HashLen() + this->crypto_->SaltLen()) {
+        this->fileio_->CloseRead();
         return LOAD_STORE_DATA_READ_ERR;
     }
     uintmax_t data_size = store_size - this->crypto_->HashLen() - this->crypto_->SaltLen();
     if (data_size == 0) {
+        this->fileio_->CloseRead();
         return LOAD_STORE_VALID;
     }
 
     auto *decrypted_data = static_cast<unsigned char *>(malloc(data_size));
-    uint64_t decrypted_size_actual;
-    if (this->ReadData(decrypted_data, data_size, &decrypted_size_actual) != 0) {
-        return LOAD_STORE_DATA_DECRYPT_ERR;
+    uint64_t decrypted_size_actual = 0;
+    int data_read_status = this->ReadData(decrypted_data, data_size, &decrypted_size_actual);
+    LoadStoreStatus return_status = LOAD_STORE_DATA_DECRYPT_ERR;
+    if (data_read_status == 0) {
+        return_status = LOAD_STORE_VALID;
+        decrypted_data[decrypted_size_actual] = 0;
+        this->LoadCards(decrypted_data);
     }
-    decrypted_data[decrypted_size_actual] = 0;
 
-    this->LoadCards(decrypted_data);
-
-    this->crypto_->Memzero(encryption_key, this->crypto_->EncryptionKeyLen());
     this->crypto_->Memzero(decrypted_data, data_size);
     free(decrypted_data);
     this->fileio_->CloseRead();
-
-    return LOAD_STORE_VALID;
+    return return_status;
 }
 
 auto Store::SaveStore() -> Store::SaveStoreStatus {
@@ -110,6 +117,7 @@ auto Store::SaveStore() -> Store::SaveStoreStatus {
         unsigned char data[data_size];
         this->CardsFormatted(data);
         if (this->WriteData(data, data_size) != 0) {
+            this->fileio_->CloseWriteTemp();
             return SAVE_STORE_WRITE_DATA_ERR;
         }
         this->crypto_->Memzero(data, data_size);
@@ -182,7 +190,6 @@ auto Store::ReadData(unsigned char *decrypted_data, uintmax_t data_size, uint64_
 
 auto Store::WriteHeader(const unsigned char *hash, const unsigned char *salt) -> int {
     if (this->fileio_->GetPositionWriteTemp() != 0) {
-        this->fileio_->CloseWriteTemp();
         return -1;
     }
 
@@ -243,6 +250,10 @@ auto Store::CardsFormatted(unsigned char *buf) -> uintmax_t {
 }
 
 void Store::LoadCards(unsigned char *data) {
+    if (data == nullptr) {
+        return; 
+    }
+
     char *rest = nullptr;
     char *portion = strtok_r(reinterpret_cast<char *>(data), ";", &rest);
 

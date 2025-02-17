@@ -11,6 +11,8 @@
 #include <vector>
 
 class Store {
+    friend class StoreTest;
+
   public:
     static const inline std::string STORE_FILE_NAME = "WalletCache.store";
 
