@@ -29,15 +29,17 @@ auto Store::InitNewStore(unsigned char *password) -> int {
     this->crypto_->GenerateSalt(salt);
 
     if (this->fileio_->OpenWriteTemp() != 0) {
+        this->crypto_->Memzero(hash, this->crypto_->HashLen());
         return -1;
     }
     if (this->WriteHeader(hash, salt) != 0) {
+        this->crypto_->Memzero(hash, this->crypto_->HashLen());
         this->fileio_->CloseWriteTemp();
         return -1;
     }
+    this->crypto_->Memzero(hash, this->crypto_->HashLen());
     this->fileio_->CloseWriteTemp();
 
-    this->crypto_->Memzero(hash, this->crypto_->HashLen());
     return this->fileio_->CommitTemp();
 }
 
@@ -86,7 +88,7 @@ auto Store::LoadStore(unsigned char *password) -> Store::LoadStoreStatus {
     }
 
     auto *decrypted_data = static_cast<unsigned char *>(malloc(data_size));
-    uint64_t decrypted_size_actual;
+    uint64_t decrypted_size_actual = 0;
     int data_read_status = this->ReadData(decrypted_data, data_size, &decrypted_size_actual);
     LoadStoreStatus return_status = LOAD_STORE_DATA_DECRYPT_ERR;
     if (data_read_status == 0) {
