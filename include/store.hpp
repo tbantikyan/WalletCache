@@ -44,7 +44,7 @@ class Store {
     auto StoreExists(bool is_tmp) -> bool;
     auto DeleteStore(bool is_tmp) -> int;
 
-    auto CardsDisplayString() -> std::string;
+    auto CardsDisplayList() -> std::vector<std::pair<uint32_t, std::string>>;
 
   private:
     std::shared_ptr<ICrypto> crypto_;

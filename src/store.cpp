@@ -137,10 +137,11 @@ auto Store::StoreExists(bool is_tmp) -> bool { return this->fileio_->GetExists(i
 
 auto Store::DeleteStore(bool is_tmp) -> int { return this->fileio_->Delete(is_tmp) ? 0 : -1; }
 
-auto Store::CardsDisplayString() -> std::string {
-    std::string result;
-    for (CreditCard *card : this->cards_) {
-        result += card->GetName() + "\n";
+auto Store::CardsDisplayList() -> std::vector<std::pair<uint32_t, std::string>> {
+    size_t n = this->cards_.size();
+    std::vector<std::pair<uint32_t, std::string>> result(this->cards_.size());
+    for (size_t i = 0; i < n; i++) {
+        result[i] = std::make_pair(i, this->cards_[i]->GetName());
     }
     return result;
 }
@@ -251,7 +252,7 @@ auto Store::CardsFormatted(unsigned char *buf) -> uintmax_t {
 
 void Store::LoadCards(unsigned char *data) {
     if (data == nullptr) {
-        return; 
+        return;
     }
 
     char *rest = nullptr;

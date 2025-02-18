@@ -377,7 +377,7 @@ TEST_F(StoreTest, SaveStore_CommitTempFails_ReturnsCommitTempErr) {
 TEST_F(StoreTest, AddCard_OneCard_ExpectCardsDisplayStringNotEmpty) {
     auto *card = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
     store_->AddCard(card);
-    EXPECT_FALSE(store_->CardsDisplayString().empty());
+    EXPECT_FALSE(store_->CardsDisplayList().empty());
 }
 
 TEST_F(StoreTest, AddCard_TwoCards_ExpectCardsDisplayStringNotEmpty) {
@@ -386,7 +386,7 @@ TEST_F(StoreTest, AddCard_TwoCards_ExpectCardsDisplayStringNotEmpty) {
     auto *card2 = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
     store_->AddCard(card2);
 
-    EXPECT_FALSE(store_->CardsDisplayString().empty());
+    EXPECT_FALSE(store_->CardsDisplayList().empty());
 }
 
 // StoreExists
@@ -431,19 +431,21 @@ TEST_F(StoreTest, DeleteStore_TmpDeleteFails_ReturnsNegative1) {
     EXPECT_EQ(store_->DeleteStore(true), -1);
 }
 
-// CardsDisplayString
-TEST_F(StoreTest, CardsDisplayString_NoCards_ReturnsEmpty) { EXPECT_TRUE(store_->CardsDisplayString().empty()); }
+// CardsDisplayList
+TEST_F(StoreTest, CardsDisplayList_NoCards_ReturnsEmpty) { EXPECT_TRUE(store_->CardsDisplayList().empty()); }
 
-TEST_F(StoreTest, CardsDisplayString_OneCard_ReturnsFormattedString) {
+TEST_F(StoreTest, CardsDisplayString_OneCard_ReturnsOneCardVector) {
     auto *card1 = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
     card1->SetName("Card1");
 
     store_->AddCard(card1);
 
-    EXPECT_EQ(store_->CardsDisplayString(), "Card1\n");
+    auto cards_list = store_->CardsDisplayList();
+    EXPECT_EQ(cards_list.size(), 1);
+    EXPECT_EQ(cards_list[0], "Card1");
 }
 
-TEST_F(StoreTest, CardsDisplayString_MultipleCards_ReturnsFormattedString) {
+TEST_F(StoreTest, CardsDisplayList_MultipleCards_ReturnsTwoCardVector) {
     auto *card1 = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
     card1->SetName("Card1");
     auto *card2 = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
@@ -452,7 +454,10 @@ TEST_F(StoreTest, CardsDisplayString_MultipleCards_ReturnsFormattedString) {
     store_->AddCard(card1);
     store_->AddCard(card2);
 
-    EXPECT_EQ(store_->CardsDisplayString(), "Card1\nCard2\n");
+    auto cards_list = store_->CardsDisplayList();
+    EXPECT_EQ(cards_list.size(), 2);
+    EXPECT_EQ(cards_list[0], "Card1");
+    EXPECT_EQ(cards_list[1], "Card2");
 }
 
 // ReadHeader
