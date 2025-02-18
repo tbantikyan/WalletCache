@@ -442,7 +442,7 @@ TEST_F(StoreTest, CardsDisplayString_OneCard_ReturnsOneCardVector) {
 
     auto cards_list = store_->CardsDisplayList();
     EXPECT_EQ(cards_list.size(), 1);
-    EXPECT_EQ(cards_list[0], "Card1");
+    EXPECT_EQ(cards_list[0].second, "Card1");
 }
 
 TEST_F(StoreTest, CardsDisplayList_MultipleCards_ReturnsTwoCardVector) {
@@ -456,8 +456,8 @@ TEST_F(StoreTest, CardsDisplayList_MultipleCards_ReturnsTwoCardVector) {
 
     auto cards_list = store_->CardsDisplayList();
     EXPECT_EQ(cards_list.size(), 2);
-    EXPECT_EQ(cards_list[0], "Card1");
-    EXPECT_EQ(cards_list[1], "Card2");
+    EXPECT_EQ(cards_list[0].second, "Card1");
+    EXPECT_EQ(cards_list[1].second, "Card2");
 }
 
 // ReadHeader
