@@ -85,14 +85,35 @@ auto HandleLogin(Store &store, UI &ui) -> Store::LoadStoreStatus {
     return store.LoadStore(password);
 }
 
+auto HandleCardInfo(Store &store, UI &ui, uint32_t card_id) -> int {
+    const CreditCard& card = store.GetCardById(card_id);
+
+    CreditCardViewModel card_view;
+    std::vector<std::pair<std::string, std::string>> fields =  card_view.GetDisplayFields(card);
+
+    uint32_t selected_field;
+    int selection = static_cast<int>(ui.CardInfoMenu(fields, &selected_field));
+    if (selection == -1) {
+        return 0;
+    }
+
+    return 0;
+}
+
 auto HandleCardsList(Store &store, UI &ui) -> int {
-    std::string cards_string = store.CardsDisplayString();
-    ui.CardsList(cards_string);
+    std::cout << "ABC" << std::endl;
+    std::vector<std::pair<uint32_t, std::string>> cards_list = store.CardsDisplayList();
+    int selection = static_cast<int>(ui.ListCardsMenu(cards_list));
+    if (selection == -1) {
+        return 0;
+    }
+
+    HandleCardInfo(store, ui, selection);
     return 0;
 }
 
 auto HandleCardAdd(Store &store, UI &ui) -> int {
-    auto *card = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
+    CreditCard card;
 
     std::string card_name;
     std::string error_msg;
@@ -101,7 +122,7 @@ auto HandleCardAdd(Store &store, UI &ui) -> int {
         if (card_name == "0") {
             return 1;
         }
-        if (card->SetName(card_name) != 0) {
+        if (card.SetName(card_name) != 0) {
             error_msg = "ERR: Name should contain only letters and numbers!\n";
         } else {
             break;
@@ -115,7 +136,7 @@ auto HandleCardAdd(Store &store, UI &ui) -> int {
         if (card_number == "0") {
             return 1;
         }
-        if (card->SetCardNumber(card_number) != 0) {
+        if (card.SetCardNumber(card_number) != 0) {
             error_msg = "ERR: Invalid card number!\n";
         } else {
             break;
@@ -129,7 +150,7 @@ auto HandleCardAdd(Store &store, UI &ui) -> int {
         if (card_cvv == "0") {
             return 1;
         }
-        if (card->SetCvv(card_cvv) != 0) {
+        if (card.SetCvv(card_cvv) != 0) {
             error_msg = "ERR: Invalid card cvv!\n";
         } else {
             break;
@@ -143,7 +164,7 @@ auto HandleCardAdd(Store &store, UI &ui) -> int {
         if (card_month == "0") {
             return 1;
         }
-        if (card->SetMonth(card_month) != 0) {
+        if (card.SetMonth(card_month) != 0) {
             error_msg = "ERR: Invalid card month!\n";
         } else {
             break;
@@ -154,7 +175,7 @@ auto HandleCardAdd(Store &store, UI &ui) -> int {
     error_msg = "";
     while (true) {
         ui.PromptCardYear(error_msg, card_year);
-        if (card->SetYear(card_year) != 0) {
+        if (card.SetYear(card_year) != 0) {
             error_msg = "ERR: Invalid card year!\n";
         } else {
             break;
@@ -240,7 +261,10 @@ auto main() -> int {
             HandleCardsList(store, ui);
             break;
         case UI::OPT_PROFILE_ADD:
-            HandleCardAdd(store, ui);
+            if (HandleCardAdd(store, ui) != 0) { 
+                continue;
+            }
+
             switch (store.SaveStore()) {
             case Store::SAVE_STORE_VALID:
                 status_msg = "New card added successfully!\n";

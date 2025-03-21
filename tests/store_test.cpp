@@ -285,7 +285,7 @@ TEST_F(StoreTest, SaveStore_NoData_ReturnsValid) {
 }
 
 TEST_F(StoreTest, SaveStore_Data_ReturnsValid) {
-    auto *card = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
+    CreditCard card;
     store_->AddCard(card);
 
     EXPECT_CALL(*mock_file_io_ptr_, OpenWriteTemp()).WillOnce(Return(0));
@@ -328,7 +328,7 @@ TEST_F(StoreTest, SaveStore_WriteHeaderFails_ReturnsHeaderErr) {
 }
 
 TEST_F(StoreTest, SaveStore_WriteDataFails_ReturnsWriteDataErr) {
-    auto *card = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
+    CreditCard card;
     store_->AddCard(card);
 
     EXPECT_CALL(*mock_file_io_ptr_, OpenWriteTemp()).WillOnce(Return(0));
@@ -345,7 +345,7 @@ TEST_F(StoreTest, SaveStore_WriteDataFails_ReturnsWriteDataErr) {
 }
 
 TEST_F(StoreTest, SaveStore_CommitTempFails_ReturnsCommitTempErr) {
-    auto *card = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
+    CreditCard card;
     store_->AddCard(card);
 
     EXPECT_CALL(*mock_file_io_ptr_, OpenWriteTemp()).WillOnce(Return(0));
@@ -375,15 +375,15 @@ TEST_F(StoreTest, SaveStore_CommitTempFails_ReturnsCommitTempErr) {
 
 // AddCard
 TEST_F(StoreTest, AddCard_OneCard_ExpectCardsDisplayStringNotEmpty) {
-    auto *card = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
+    CreditCard card;
     store_->AddCard(card);
     EXPECT_FALSE(store_->CardsDisplayList().empty());
 }
 
 TEST_F(StoreTest, AddCard_TwoCards_ExpectCardsDisplayStringNotEmpty) {
-    auto *card1 = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
+    CreditCard card1;
     store_->AddCard(card1);
-    auto *card2 = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
+    CreditCard card2;
     store_->AddCard(card2);
 
     EXPECT_FALSE(store_->CardsDisplayList().empty());
@@ -435,8 +435,8 @@ TEST_F(StoreTest, DeleteStore_TmpDeleteFails_ReturnsNegative1) {
 TEST_F(StoreTest, CardsDisplayList_NoCards_ReturnsEmpty) { EXPECT_TRUE(store_->CardsDisplayList().empty()); }
 
 TEST_F(StoreTest, CardsDisplayString_OneCard_ReturnsOneCardVector) {
-    auto *card1 = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
-    card1->SetName("Card1");
+    CreditCard card1;
+    card1.SetName("Card1");
 
     store_->AddCard(card1);
 
@@ -446,10 +446,10 @@ TEST_F(StoreTest, CardsDisplayString_OneCard_ReturnsOneCardVector) {
 }
 
 TEST_F(StoreTest, CardsDisplayList_MultipleCards_ReturnsTwoCardVector) {
-    auto *card1 = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
-    card1->SetName("Card1");
-    auto *card2 = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
-    card2->SetName("Card2");
+    CreditCard card1;
+    card1.SetName("Card1");
+    CreditCard card2;
+    card2.SetName("Card2");
 
     store_->AddCard(card1);
     store_->AddCard(card2);
@@ -458,6 +458,33 @@ TEST_F(StoreTest, CardsDisplayList_MultipleCards_ReturnsTwoCardVector) {
     EXPECT_EQ(cards_list.size(), 2);
     EXPECT_EQ(cards_list[0].second, "Card1");
     EXPECT_EQ(cards_list[1].second, "Card2");
+}
+
+// GetCardById
+TEST_F(StoreTest, GetCardById_OnlyCard_ReturnsCorrectCard) {
+    CreditCard card1;
+    card1.SetName("Card1");
+
+    store_->AddCard(card1);
+    auto card = store_->GetCardById(0);
+
+    EXPECT_EQ(card.FormatText(), card1.FormatText());
+}
+
+TEST_F(StoreTest, GetCardById_SelectSecondFromThreeCards_ReturnsCorrectCard) {
+    CreditCard card1;
+    card1.SetName("Card1");
+    CreditCard card2;
+    card1.SetName("Card2");
+    CreditCard card3;
+    card1.SetName("Card3");
+
+    store_->AddCard(card1);
+    store_->AddCard(card2);
+    store_->AddCard(card3);
+    auto card = store_->GetCardById(1);
+
+    EXPECT_EQ(card.FormatText(), card2.FormatText());
 }
 
 // ReadHeader

@@ -3,19 +3,20 @@
 #include "verification.hpp"
 
 #include <iostream>
+#include <unordered_map>
 
 auto UI::StartMenu(const std::string &status_msg, bool profile_exists) -> UI::StartMenuOption {
     ClearScreen();
     std::cout << status_msg;
-    std::cout << UIStrings::WELCOME; 
-    std::cout << UIStrings::SELECT_OPT; 
+    std::cout << UIStrings::WELCOME;
+    std::cout << UIStrings::SELECT_OPT;
     std::cout << UIStrings::START_MENU_EXIT;
     std::cout << UIStrings::START_MENU_CREATE_PROFILE;
     if (profile_exists) {
         std::cout << UIStrings::START_MENU_LOGIN_PROFILE;
     }
 
-    return static_cast<UI::StartMenuOption>(GetSelection(0, profile_exists ? 2 : 1));
+    return static_cast<UI::StartMenuOption>(this->GetSelection(0, profile_exists ? 2 : 1));
 }
 
 void UI::CreateProfileMenu(const std::string &status_msg, std::string &password, std::string &confirm_password) {
@@ -38,12 +39,60 @@ auto UI::ProfileMenu(const std::string &status_msg) -> UI::ProfileMenuOption {
     std::cout << UIStrings::PROFILE_MENU_ADD;
     std::cout << UIStrings::PROFILE_MENU_DELETE;
 
-    return static_cast<UI::ProfileMenuOption>(GetSelection(0, 3));
+    return static_cast<UI::ProfileMenuOption>(this->GetSelection(0, 3));
 }
 
-void UI::CardsList(const std::string &cards_string) {
+auto UI::ListCardsMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) -> int {
     ClearScreen();
-    std::cout << cards_string;
+
+    auto choice_mapping = std::unordered_map<int, uint32_t>();
+    std::cout << UIStrings::LIST_CARDS_RETURN;
+
+    int opt = 1;
+    for (const std::pair<uint32_t, std::string> &card_item : cards_list) {
+        std::cout << "[" << opt << "] " << card_item.second << "\n";
+        choice_mapping.insert(std::make_pair(opt, card_item.first));
+        opt++;
+    }
+
+    int selection = this->GetSelection(0, static_cast<int>(cards_list.size()));
+    if (selection == 0) {
+        return -1;
+    }
+    return static_cast<int>(choice_mapping.at(selection));
+}
+
+auto UI::CardInfoMenu(const std::vector<std::pair<std::string, std::string>> &card_fields, uint32_t *selected_field)
+    -> UI::CardInfoMenuOption {
+    ClearScreen();
+
+    auto choice_mapping = std::unordered_map<int, uint32_t>();
+    std::cout << UIStrings::CARD_INFO_RETURN;
+    std::cout << UIStrings::CARD_INFO_DELETE;
+    std::cout << UIStrings::CARD_INFO_TOGGLE_VISIBILITY;
+
+    std::cout << UIStrings::CARD_INFO_FIELDS_PROMPT;
+    int opt = 3;
+    auto fields_size = static_cast<uint32_t>(card_fields.size());
+    for (uint32_t i = 0; i < fields_size; ++i) {
+        const std::pair<std::string, std::string>& field = card_fields[i];
+        std::cout << "[" << opt << "] " << field.first << field.second << "\n";
+        choice_mapping.insert({opt, i});
+        opt++;
+    }
+
+    int selection = this->GetSelection(0, static_cast<int>(card_fields.size()) + 1);
+    if (selection == 0) {
+        return OPT_CARD_RETURN;
+    }
+    if (selection == 1) {
+        return OPT_CARD_DELETE;
+    }
+    if (selection == 2) {
+        return OPT_CARD_TOGGLE_VISIBLE;
+    }
+    *selected_field = static_cast<int>(choice_mapping.at(selection));
+    return OPT_CARD_RETURN;
 }
 
 void UI::DisplayHashing() { std::cout << UIStrings::HASHING; }

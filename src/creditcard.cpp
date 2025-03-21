@@ -22,6 +22,9 @@ auto CreditCard::SetCardNumber(const std::string &card_number) -> int {
 
     this->card_number_ = card_number;
     this->DetermineNetwork();
+    std::string last_four_digits = this->card_number_.substr(this->card_number_.size() - 4);
+    this->default_name_ = this->GetNetworkString() + " " + last_four_digits;
+
     return 0;
 }
 
@@ -54,7 +57,7 @@ auto CreditCard::SetYear(const std::string &year) -> int {
     return 0;
 }
 
-auto CreditCard::GetName() -> std::string {
+auto CreditCard::GetName() const -> std::string {
     if (!this->name_.empty()) {
         return this->name_;
     }
@@ -62,16 +65,10 @@ auto CreditCard::GetName() -> std::string {
         return this->default_name_;
     }
 
-    if (this->card_number_.empty()) {
-        return "";
-    }
-
-    std::string last_four_digits = this->card_number_.substr(this->card_number_.size() - 4);
-    this->default_name_ = this->GetNetworkString() + " " + last_four_digits;
-    return this->default_name_;
+    return "";
 }
 
-auto CreditCard::FormatText() -> std::string {
+auto CreditCard::FormatText() const -> std::string {
     return this->name_ + "," + this->card_number_ + "," + this->cvv_ + "," + this->month_ + "," + this->year_ + ";";
 }
 
@@ -130,4 +127,15 @@ auto CreditCard::GetNetworkString() -> std::string {
     default:
         return "Unknown Network";
     }
+}
+
+auto CreditCardViewModel::GetDisplayFields(const CreditCard &card) const
+    -> std::vector<std::pair<std::string, std::string>> {
+    std::vector<std::pair<std::string, std::string>> fields;
+    fields.emplace_back(UIStrings::CARD_NAME_LABEL, card.GetName());
+    fields.emplace_back(UIStrings::CARD_NUMBER_LABEL, card.card_number_);
+    fields.emplace_back(UIStrings::CARD_CVV_LABEL, card.cvv_);
+    fields.emplace_back(UIStrings::CARD_MONTH_LABEL, card.month_);
+    fields.emplace_back(UIStrings::CARD_YEAR_LABEL, card.year_);
+    return fields;
 }

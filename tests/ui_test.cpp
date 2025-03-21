@@ -232,14 +232,53 @@ TEST_F(UITest, ProfileMenu_InputWithErrorMessage) {
     EXPECT_EQ(selection, UI::ProfileMenuOption::OPT_PROFILE_EXIT);
 }
 
-// CardsList
-TEST_F(UITest, CardsList_DisplaysCards) {
+// ListCardsMenu
+TEST_F(UITest, ListCardsMenu_InputReturn) {
     UI ui;
-    const std::string test_cards = "Card 1\nCard 2\n";
+    const std::vector<std::pair<uint32_t, std::string>> test_list = {
+        std::make_pair(0, "Card 1"),
+        std::make_pair(1, "Card 2"),
+    };
+    input_stream_ << "0\n";
 
-    ui.CardsList(test_cards);
+    int selection = ui.ListCardsMenu(test_list);
 
-    EXPECT_NE(output_stream_.str().find(test_cards), std::string::npos);
+    EXPECT_NE(output_stream_.str().find(UIStrings::LIST_CARDS_RETURN), std::string::npos);
+    EXPECT_NE(output_stream_.str().find("Card 1"), std::string::npos);
+    EXPECT_NE(output_stream_.str().find("Card 2"), std::string::npos);
+    EXPECT_EQ(selection, -1);
+}
+
+TEST_F(UITest, ListCardsMenu_InputFirstCard) {
+    UI ui;
+    const std::vector<std::pair<uint32_t, std::string>> test_list = {
+        std::make_pair(0, "Card 1"),
+        std::make_pair(1, "Card 2"),
+    };
+    input_stream_ << "1\n";
+
+    int selection = ui.ListCardsMenu(test_list);
+
+    EXPECT_NE(output_stream_.str().find(UIStrings::LIST_CARDS_RETURN), std::string::npos);
+    EXPECT_NE(output_stream_.str().find("Card 1"), std::string::npos);
+    EXPECT_NE(output_stream_.str().find("Card 2"), std::string::npos);
+    EXPECT_EQ(selection, 0);
+}
+
+TEST_F(UITest, ListCardsMenu_InputSecondCard) {
+    UI ui;
+    const std::vector<std::pair<uint32_t, std::string>> test_list = {
+        std::make_pair(0, "Card 1"),
+        std::make_pair(1, "Card 2"),
+    };
+    input_stream_ << "2\n";
+
+    int selection = ui.ListCardsMenu(test_list);
+
+    EXPECT_NE(output_stream_.str().find(UIStrings::LIST_CARDS_RETURN), std::string::npos);
+    EXPECT_NE(output_stream_.str().find("Card 1"), std::string::npos);
+    EXPECT_NE(output_stream_.str().find("Card 2"), std::string::npos);
+    EXPECT_EQ(selection, 1);
 }
 
 // DisplayHashing
