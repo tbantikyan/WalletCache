@@ -1,5 +1,7 @@
 #include "utils.hpp"
 
+#include "clip.h"
+
 #include <cstdlib>
 #include <filesystem>
 #include <pwd.h>
@@ -79,3 +81,5 @@ auto GetFilePath(const std::string &dir, const std::string &file_name) -> std::s
 
     return path;
 }
+
+void CopyToClipboard(const std::string &str) { clip::set_text(str); }

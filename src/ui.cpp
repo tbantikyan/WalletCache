@@ -83,7 +83,7 @@ auto UI::CardInfoMenu(const std::vector<std::pair<std::string, std::string>> &ca
         opt++;
     }
 
-    int selection = this->GetSelection(0, static_cast<int>(card_fields.size()) + 1);
+    int selection = this->GetSelection(0, static_cast<int>(card_fields.size()) + 2);
     if (selection == 0) {
         return OPT_CARD_RETURN;
     }
@@ -94,7 +94,7 @@ auto UI::CardInfoMenu(const std::vector<std::pair<std::string, std::string>> &ca
         return OPT_CARD_TOGGLE_VISIBLE;
     }
     *selected_field = static_cast<int>(choice_mapping.at(selection));
-    return OPT_CARD_RETURN;
+    return OPT_CARD_COPY;
 }
 
 void UI::DisplayHashing() { std::cout << UIStrings::HASHING; }

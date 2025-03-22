@@ -1,10 +1,10 @@
 #ifndef CREDITCARD_HPP
 #define CREDITCARD_HPP
 
+#include "ui.hpp"
+
 #include <string>
 #include <vector>
-
-#include "ui.hpp"
 
 class CreditCard {
     friend class CreditCardViewModel;

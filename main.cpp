@@ -106,7 +106,7 @@ auto HandleCardInfo(Store &store, UI &ui, uint32_t card_id) -> int {
             fields_visible = !fields_visible;
             break;
         case UI::OPT_CARD_COPY:
-            // TODO(tigran): Card copy
+            CopyToClipboard(fields[selected_field].second);
             break;
         }
     }

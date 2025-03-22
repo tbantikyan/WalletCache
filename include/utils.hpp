@@ -13,4 +13,5 @@ auto GetHomePath() -> std::string;
 
 auto GetFilePath(const std::string &dir, const std::string &file_name) -> std::string;
 
+void CopyToClipboard(const std::string &str);
 #endif // UTILS_HPP
