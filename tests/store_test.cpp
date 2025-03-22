@@ -389,6 +389,61 @@ TEST_F(StoreTest, AddCard_TwoCards_ExpectCardsDisplayStringNotEmpty) {
     EXPECT_FALSE(store_->CardsDisplayList().empty());
 }
 
+// DeleteCard
+TEST_F(StoreTest, Delete_OneCard_ExpectCardNotInDisplayString) {
+    auto *card = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
+    std::string card_name = "Card1";
+    card->SetName(card_name);
+
+    store_->AddCard(card);
+    store_->DeleteCard(0);
+
+    std::string cards_display_str = store_->CardsDisplayString();
+    EXPECT_EQ(cards_display_str.find(card_name), std::string::npos);
+}
+
+TEST_F(StoreTest, DeleteCard_TwoCards_ExpectOnlyDeletedCardNotInDisplayString) {
+    auto *card1 = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
+    std::string card1_name = "Card1";
+    card1->SetName(card1_name);
+    store_->AddCard(card1);
+
+    auto *card2 = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
+    std::string card2_name = "Card2";
+    card2->SetName(card2_name);
+    store_->AddCard(card2);
+
+    store_->DeleteCard(0);
+
+    std::string cards_display_str = store_->CardsDisplayString();
+    EXPECT_EQ(cards_display_str.find(card1_name), std::string::npos);
+    EXPECT_NE(cards_display_str.find(card2_name), std::string::npos);
+}
+
+TEST_F(StoreTest, DeleteCard_ThreeCards_ExpectOnlyDeletedCardNotInDisplayString) {
+    auto *card1 = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
+    std::string card1_name = "Card1";
+    card1->SetName(card1_name);
+    store_->AddCard(card1);
+
+    auto *card2 = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
+    std::string card2_name = "Card2";
+    card2->SetName(card2_name);
+    store_->AddCard(card2);
+
+    auto *card3 = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
+    std::string card3_name = "Card3";
+    card3->SetName(card3_name);
+    store_->AddCard(card3);
+
+    store_->DeleteCard(1);
+
+    std::string cards_display_str = store_->CardsDisplayString();
+    EXPECT_EQ(cards_display_str.find(card2_name), std::string::npos);
+    EXPECT_NE(cards_display_str.find(card1_name), std::string::npos);
+    EXPECT_NE(cards_display_str.find(card3_name), std::string::npos);
+}
+
 // StoreExists
 TEST_F(StoreTest, StoreExists_MainFileExists_ReturnsTrue) {
     EXPECT_CALL(*mock_file_io_ptr_, GetExists(false)).WillOnce(Return(true));
