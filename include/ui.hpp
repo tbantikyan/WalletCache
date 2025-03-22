@@ -53,6 +53,8 @@ struct UIStrings {
     static const inline std::string CARD_CVV_LABEL = "CVV: ";
     static const inline std::string CARD_MONTH_LABEL = "Expiration Month: ";
     static const inline std::string CARD_YEAR_LABEL = "Expiration Year: ";
+
+    static const inline std::string HIDDEN_FIELD = "•••••";
 };
 
 class UI {
@@ -81,7 +83,8 @@ class UI {
     void CreateProfileMenu(const std::string &status_msg, std::string &password, std::string &confirm_password);
     auto ProfileMenu(const std::string &status_msg) -> ProfileMenuOption;
     auto ListCardsMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) -> int;
-    auto CardInfoMenu(const std::vector<std::pair<std::string, std::string>> &card_fields, uint32_t *selected_field) -> CardInfoMenuOption;
+    auto CardInfoMenu(const std::vector<std::pair<std::string, std::string>> &card_fields, uint32_t *selected_field,
+                      bool fields_visible) -> CardInfoMenuOption;
 
     void DisplayHashing();
 

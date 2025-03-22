@@ -86,29 +86,43 @@ auto HandleLogin(Store &store, UI &ui) -> Store::LoadStoreStatus {
 }
 
 auto HandleCardInfo(Store &store, UI &ui, uint32_t card_id) -> int {
-    const CreditCard& card = store.GetCardById(card_id);
+    const CreditCard &card = store.GetCardById(card_id);
 
     CreditCardViewModel card_view;
-    std::vector<std::pair<std::string, std::string>> fields =  card_view.GetDisplayFields(card);
+    std::vector<std::pair<std::string, std::string>> fields = card_view.GetDisplayFields(card);
 
     uint32_t selected_field;
-    int selection = static_cast<int>(ui.CardInfoMenu(fields, &selected_field));
-    if (selection == -1) {
-        return 0;
+    bool fields_visible = false;
+    while (true) {
+        UI::CardInfoMenuOption selection = ui.CardInfoMenu(fields, &selected_field, fields_visible);
+        switch (selection) {
+        case UI::OPT_CARD_RETURN:
+            return 0;
+            break;
+        case UI::OPT_CARD_DELETE:
+            // TODO(tigran): Card delete
+            break;
+        case UI::OPT_CARD_TOGGLE_VISIBLE:
+            fields_visible = !fields_visible;
+            break;
+        case UI::OPT_CARD_COPY:
+            // TODO(tigran): Card copy
+            break;
+        }
     }
-
-    return 0;
 }
 
 auto HandleCardsList(Store &store, UI &ui) -> int {
     std::cout << "ABC" << std::endl;
     std::vector<std::pair<uint32_t, std::string>> cards_list = store.CardsDisplayList();
-    int selection = static_cast<int>(ui.ListCardsMenu(cards_list));
-    if (selection == -1) {
-        return 0;
-    }
+    while (true) {
+        int selection = static_cast<int>(ui.ListCardsMenu(cards_list));
+        if (selection == -1) {
+            break;
+        }
 
-    HandleCardInfo(store, ui, selection);
+        HandleCardInfo(store, ui, selection);
+    }
     return 0;
 }
 
@@ -261,7 +275,7 @@ auto main() -> int {
             HandleCardsList(store, ui);
             break;
         case UI::OPT_PROFILE_ADD:
-            if (HandleCardAdd(store, ui) != 0) { 
+            if (HandleCardAdd(store, ui) != 0) {
                 continue;
             }
 

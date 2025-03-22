@@ -62,8 +62,8 @@ auto UI::ListCardsMenu(const std::vector<std::pair<uint32_t, std::string>> &card
     return static_cast<int>(choice_mapping.at(selection));
 }
 
-auto UI::CardInfoMenu(const std::vector<std::pair<std::string, std::string>> &card_fields, uint32_t *selected_field)
-    -> UI::CardInfoMenuOption {
+auto UI::CardInfoMenu(const std::vector<std::pair<std::string, std::string>> &card_fields, uint32_t *selected_field,
+                      bool fields_visible) -> UI::CardInfoMenuOption {
     ClearScreen();
 
     auto choice_mapping = std::unordered_map<int, uint32_t>();
@@ -75,8 +75,10 @@ auto UI::CardInfoMenu(const std::vector<std::pair<std::string, std::string>> &ca
     int opt = 3;
     auto fields_size = static_cast<uint32_t>(card_fields.size());
     for (uint32_t i = 0; i < fields_size; ++i) {
-        const std::pair<std::string, std::string>& field = card_fields[i];
-        std::cout << "[" << opt << "] " << field.first << field.second << "\n";
+        const std::pair<std::string, std::string> &field = card_fields[i];
+        std::string field_value =
+            (!fields_visible && field.first != UIStrings::CARD_NAME_LABEL) ? UIStrings::HIDDEN_FIELD : field.second;
+        std::cout << "[" << opt << "] " << field.first << field_value << "\n";
         choice_mapping.insert({opt, i});
         opt++;
     }
