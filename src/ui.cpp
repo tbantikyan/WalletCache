@@ -91,6 +91,27 @@ auto UI::CardInfoMenu(const std::vector<std::pair<std::string, std::string>> &ca
     return OPT_CARD_COPY;
 }
 
+auto UI::CardDeleteMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) -> int {
+    while (true) {
+        ClearScreen();
+
+        auto choice_mapping = std::unordered_map<int, uint32_t>();
+        std::cout << UIStrings::DELETE_CARD_MESSAGE;
+        std::cout << UIStrings::DELETE_CARD_RETURN;
+
+        this->ListCards(cards_list, choice_mapping, /* starting_option */ 1);
+
+        int selection = this->GetSelection(0, static_cast<int>(cards_list.size()));
+        if (selection == 0) {
+            return -1;
+        }
+
+        if (this->PromptConfirmation(UIStrings::DELETE_CARD_CONFIRM_SELECTION)) {
+            return static_cast<int>(choice_mapping.at(selection));
+        }
+    }
+}
+
 void UI::DisplayHashing() { std::cout << UIStrings::HASHING; }
 
 void UI::PromptCardCvv(const std::string &status_msg, std::string &cvv) {
@@ -150,7 +171,7 @@ auto UI::PromptConfirmation(const std::string &msg) -> bool {
 }
 
 void UI::ListCards(const std::vector<std::pair<uint32_t, std::string>> &cards_list,
-                         std::unordered_map<int, uint32_t> &choice_mapping, int starting_option) {
+                   std::unordered_map<int, uint32_t> &choice_mapping, int starting_option) {
     int opt = starting_option;
     for (const std::pair<uint32_t, std::string> &card_item : cards_list) {
         std::cout << "[" << opt << "] " << card_item.second << "\n";

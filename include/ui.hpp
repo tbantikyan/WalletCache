@@ -56,6 +56,10 @@ struct UIStrings {
     static const inline std::string CARD_YEAR_LABEL = "Expiration Year: ";
 
     static const inline std::string HIDDEN_FIELD = "•••••";
+
+    static const inline std::string DELETE_CARD_MESSAGE = "Select a card to delete:\n";
+    static const inline std::string DELETE_CARD_RETURN = "[0] RETURN\n";
+    static const inline std::string DELETE_CARD_CONFIRM_SELECTION = "Are you sure you wnat to delete this card?\n";
 };
 
 class UI {
@@ -86,6 +90,7 @@ class UI {
     auto CardListMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) -> int;
     auto CardInfoMenu(const std::vector<std::pair<std::string, std::string>> &card_fields, uint32_t *selected_field,
                       bool fields_visible) -> CardInfoMenuOption;
+    auto CardDeleteMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) -> int;
 
     void DisplayHashing();
 

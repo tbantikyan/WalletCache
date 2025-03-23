@@ -199,6 +199,19 @@ auto HandleCardAdd(Store &store, UI &ui) -> int {
     return 0;
 }
 
+auto HandleCardDelete(Store &store, UI &ui) -> int {
+    while (true) {
+        std::vector<std::pair<uint32_t, std::string>> cards_list = store.CardsDisplayList();
+        int selection = ui.CardDeleteMenu(cards_list);
+        if (selection == -1) {
+            break;
+        }
+
+        store.DeleteCard(static_cast<uint32_t>(selection));
+    }
+    return 0;
+}
+
 auto main() -> int {
     std::string store_path = GetStorePath();
     if (store_path.empty()) {
@@ -297,6 +310,7 @@ auto main() -> int {
 
             break;
         case UI::OPT_PROFILE_DEL:
+            HandleCardDelete(store, ui);
             break;
         }
     }
