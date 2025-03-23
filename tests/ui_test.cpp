@@ -249,7 +249,7 @@ TEST_F(UITest, ListCardsMenu_InputReturn) {
     EXPECT_EQ(selection, -1);
 }
 
-TEST_F(UITest, ListCardsMenu_InputFirstCard) {
+TEST_F(UITest, ListCardsMenu_TwoCards_InputFirstCard) {
     UI ui;
     const std::vector<std::pair<uint32_t, std::string>> test_list = {
         std::make_pair(0, "Card 1"),
@@ -265,7 +265,7 @@ TEST_F(UITest, ListCardsMenu_InputFirstCard) {
     EXPECT_EQ(selection, 0);
 }
 
-TEST_F(UITest, ListCardsMenu_InputSecondCard) {
+TEST_F(UITest, ListCardsMenu_TwoCards_InputSecondCard) {
     UI ui;
     const std::vector<std::pair<uint32_t, std::string>> test_list = {
         std::make_pair(0, "Card 1"),
@@ -279,6 +279,144 @@ TEST_F(UITest, ListCardsMenu_InputSecondCard) {
     EXPECT_NE(output_stream_.str().find("Card 1"), std::string::npos);
     EXPECT_NE(output_stream_.str().find("Card 2"), std::string::npos);
     EXPECT_EQ(selection, 1);
+}
+
+// CardInfoMenu
+void CardInfoMenuExpectOptions(const std::string &output) {
+    EXPECT_NE(output.find(UIStrings::CARD_INFO_RETURN), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::CARD_INFO_DELETE), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::CARD_INFO_TOGGLE_VISIBILITY), std::string::npos);
+
+    EXPECT_NE(output.find(UIStrings::CARD_NAME_LABEL), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::CARD_NUMBER_LABEL), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::CARD_CVV_LABEL), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::CARD_MONTH_LABEL), std::string::npos);
+    EXPECT_NE(output.find(UIStrings::CARD_YEAR_LABEL), std::string::npos);
+}
+
+void CardInfoMenuExpectFieldsHidden(const std::string &output,
+                                    const std::vector<std::pair<std::string, std::string>> &fields) {
+    EXPECT_NE(output.find(fields[0].second), std::string::npos);
+    EXPECT_EQ(output.find(fields[1].second), std::string::npos);
+    EXPECT_EQ(output.find(fields[2].second), std::string::npos);
+    EXPECT_EQ(output.find(fields[3].second), std::string::npos);
+    EXPECT_EQ(output.find(fields[4].second), std::string::npos);
+
+    EXPECT_NE(output.find(UIStrings::HIDDEN_FIELD), std::string::npos);
+}
+void CardInfoMenuExpectFieldsVisible(const std::string &output,
+                                    const std::vector<std::pair<std::string, std::string>> &fields) {
+    EXPECT_NE(output.find(fields[0].second), std::string::npos);
+    EXPECT_NE(output.find(fields[1].second), std::string::npos);
+    EXPECT_NE(output.find(fields[2].second), std::string::npos);
+    EXPECT_NE(output.find(fields[3].second), std::string::npos);
+    EXPECT_NE(output.find(fields[4].second), std::string::npos);
+
+    EXPECT_EQ(output.find(UIStrings::HIDDEN_FIELD), std::string::npos);
+}
+
+TEST_F(UITest, CardInfoMenu_FieldsHiddenAndSelectReturn_ReturnsRETURN) {
+    UI ui;
+    const std::vector<std::pair<std::string, std::string>> fields = {
+        {UIStrings::CARD_NAME_LABEL, "Visa 1111"}, {UIStrings::CARD_NUMBER_LABEL, "4111111111111111"},
+        {UIStrings::CARD_CVV_LABEL, "761"},        {UIStrings::CARD_MONTH_LABEL, "10"},
+        {UIStrings::CARD_YEAR_LABEL, "2024"},
+    };
+    input_stream_ << "0\n";
+    uint32_t selected_field;
+    UI::CardInfoMenuOption selected_option = ui.CardInfoMenu(fields, &selected_field, /* fields_visible */ false);
+
+    std::string output = output_stream_.str();
+    CardInfoMenuExpectOptions(output);
+    CardInfoMenuExpectFieldsHidden(output, fields);
+    EXPECT_EQ(selected_option, UI::CardInfoMenuOption::OPT_CARD_RETURN);
+}
+
+TEST_F(UITest, CardInfoMenu_FieldsVisibleAndSelectReturn_ReturnsReturn) {
+    UI ui;
+    const std::vector<std::pair<std::string, std::string>> fields = {
+        {UIStrings::CARD_NAME_LABEL, "Visa 1111"}, {UIStrings::CARD_NUMBER_LABEL, "4111111111111111"},
+        {UIStrings::CARD_CVV_LABEL, "761"},        {UIStrings::CARD_MONTH_LABEL, "10"},
+        {UIStrings::CARD_YEAR_LABEL, "2024"},
+    };
+    input_stream_ << "0\n";
+    uint32_t selected_field;
+    UI::CardInfoMenuOption selected_option = ui.CardInfoMenu(fields, &selected_field, /* fields_visible */ true);
+
+    std::string output = output_stream_.str();
+    CardInfoMenuExpectOptions(output);
+    CardInfoMenuExpectFieldsVisible(output, fields);
+    EXPECT_EQ(selected_option, UI::CardInfoMenuOption::OPT_CARD_RETURN);
+}
+
+TEST_F(UITest, CardInfoMenu_FieldsVisibleAndSelectDelete_ReturnsDelete) {
+    UI ui;
+    const std::vector<std::pair<std::string, std::string>> fields = {
+        {UIStrings::CARD_NAME_LABEL, "Visa 1111"}, {UIStrings::CARD_NUMBER_LABEL, "4111111111111111"},
+        {UIStrings::CARD_CVV_LABEL, "761"},        {UIStrings::CARD_MONTH_LABEL, "10"},
+        {UIStrings::CARD_YEAR_LABEL, "2024"},
+    };
+    input_stream_ << "1\n";
+    uint32_t selected_field;
+    UI::CardInfoMenuOption selected_option = ui.CardInfoMenu(fields, &selected_field, /* fields_visible */ true);
+
+    std::string output = output_stream_.str();
+    CardInfoMenuExpectOptions(output);
+    CardInfoMenuExpectFieldsVisible(output, fields);
+    EXPECT_EQ(selected_option, UI::CardInfoMenuOption::OPT_CARD_DELETE);
+}
+
+TEST_F(UITest, CardInfoMenu_FieldsHiddenAndSelectToggleVisbility_ReturnsToggleVisiblity) {
+    UI ui;
+    const std::vector<std::pair<std::string, std::string>> fields = {
+        {UIStrings::CARD_NAME_LABEL, "Visa 1111"}, {UIStrings::CARD_NUMBER_LABEL, "4111111111111111"},
+        {UIStrings::CARD_CVV_LABEL, "761"},        {UIStrings::CARD_MONTH_LABEL, "10"},
+        {UIStrings::CARD_YEAR_LABEL, "2024"},
+    };
+    input_stream_ << "2\n";
+    uint32_t selected_field;
+    UI::CardInfoMenuOption selected_option = ui.CardInfoMenu(fields, &selected_field, /* fields_visible */ false);
+
+    std::string output = output_stream_.str();
+    CardInfoMenuExpectOptions(output);
+    CardInfoMenuExpectFieldsHidden(output, fields);
+    EXPECT_EQ(selected_option, UI::CardInfoMenuOption::OPT_CARD_TOGGLE_VISIBLE);
+}
+
+TEST_F(UITest, CardInfoMenu_FieldsHiddenAndSelectFieldThree_ReturnsCopyAndFieldZero) {
+    UI ui;
+    const std::vector<std::pair<std::string, std::string>> fields = {
+        {UIStrings::CARD_NAME_LABEL, "Visa 1111"}, {UIStrings::CARD_NUMBER_LABEL, "4111111111111111"},
+        {UIStrings::CARD_CVV_LABEL, "761"},        {UIStrings::CARD_MONTH_LABEL, "10"},
+        {UIStrings::CARD_YEAR_LABEL, "2024"},
+    };
+    input_stream_ << "3\n";
+    uint32_t selected_field;
+    UI::CardInfoMenuOption selected_option = ui.CardInfoMenu(fields, &selected_field, /* fields_visible */ false);
+
+    std::string output = output_stream_.str();
+    CardInfoMenuExpectOptions(output);
+    CardInfoMenuExpectFieldsHidden(output, fields);
+    EXPECT_EQ(selected_option, UI::CardInfoMenuOption::OPT_CARD_COPY);
+    EXPECT_EQ(selected_field, 0); 
+}
+
+TEST_F(UITest, CardInfoMenu_FieldsVisibleAndSelectFieldSeven_ReturnsCopyAndFieldFour) {
+    UI ui;
+    const std::vector<std::pair<std::string, std::string>> fields = {
+        {UIStrings::CARD_NAME_LABEL, "Visa 1111"}, {UIStrings::CARD_NUMBER_LABEL, "4111111111111111"},
+        {UIStrings::CARD_CVV_LABEL, "761"},        {UIStrings::CARD_MONTH_LABEL, "10"},
+        {UIStrings::CARD_YEAR_LABEL, "2024"},
+    };
+    input_stream_ << "7\n";
+    uint32_t selected_field;
+    UI::CardInfoMenuOption selected_option = ui.CardInfoMenu(fields, &selected_field, /* fields_visible */ true);
+
+    std::string output = output_stream_.str();
+    CardInfoMenuExpectOptions(output);
+    CardInfoMenuExpectFieldsVisible(output, fields);
+    EXPECT_EQ(selected_option, UI::CardInfoMenuOption::OPT_CARD_COPY);
+    EXPECT_EQ(selected_field, 4); 
 }
 
 // DisplayHashing
