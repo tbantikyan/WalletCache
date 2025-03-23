@@ -130,6 +130,7 @@ void Store::AddCard(const CreditCard &card) { this->cards_.emplace_back(card); }
 void Store::DeleteCard(uint32_t card_id) {
     // TODO(tigran): update cards impl. to list for more efficient delete
     this->cards_.erase(this->cards_.begin() + card_id);
+    this->SaveStore();
 }
 
 auto Store::StoreExists(bool is_tmp) -> bool { return this->fileio_->GetExists(is_tmp); }
