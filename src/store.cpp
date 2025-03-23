@@ -11,13 +11,7 @@ Store::Store(std::shared_ptr<ICrypto> crypto, std::unique_ptr<IFileIO> fileio) {
     this->fileio_ = std::move(fileio);
 }
 
-Store::~Store() {
-    for (CreditCard *card_ptr : this->cards_) {
-        free(card_ptr);
-    }
-
-    this->cards_.clear();
-}
+Store::~Store() { this->cards_.clear(); }
 
 auto Store::InitNewStore(unsigned char *password) -> int {
     unsigned char hash[this->crypto_->HashLen()];
@@ -131,18 +125,25 @@ auto Store::SaveStore() -> Store::SaveStoreStatus {
     return SAVE_STORE_VALID;
 }
 
-void Store::AddCard(CreditCard *card) { this->cards_.push_back(card); }
+void Store::AddCard(const CreditCard &card) { this->cards_.emplace_back(card); }
 
 auto Store::StoreExists(bool is_tmp) -> bool { return this->fileio_->GetExists(is_tmp); }
 
 auto Store::DeleteStore(bool is_tmp) -> int { return this->fileio_->Delete(is_tmp) ? 0 : -1; }
 
-auto Store::CardsDisplayString() -> std::string {
-    std::string result;
-    for (CreditCard *card : this->cards_) {
-        result += card->GetName() + "\n";
+auto Store::CardsDisplayList() const -> std::vector<std::pair<uint32_t, std::string>> {
+    size_t n = this->cards_.size();
+    std::vector<std::pair<uint32_t, std::string>> result(n);
+    for (size_t i = 0; i < n; i++) {
+        const CreditCard &card = this->cards_[i];
+        result[i] = std::make_pair(i, card.GetName());
     }
     return result;
+}
+
+auto Store::GetCardById(uint32_t card_id) const -> const CreditCard& {
+    const CreditCard &card = this->cards_[card_id];
+    return card;
 }
 
 auto Store::ReadHeader(unsigned char *hash, unsigned char *salt) -> int {
@@ -231,16 +232,16 @@ auto Store::WriteData(unsigned char *decrypted_data, uintmax_t decrypt_data_size
 
 auto Store::GetCardsSize() -> uintmax_t {
     uintmax_t total_size = 0;
-    for (CreditCard *card_ptr : this->cards_) {
-        total_size += card_ptr->FormatText().size();
+    for (const CreditCard &card_ptr : this->cards_) {
+        total_size += card_ptr.FormatText().size();
     }
     return total_size;
 }
 
 auto Store::CardsFormatted(unsigned char *buf) -> uintmax_t {
     uintmax_t pos = 0;
-    for (CreditCard *card_ptr : this->cards_) {
-        std::string formatted_card = card_ptr->FormatText();
+    for (const CreditCard &card_ptr : this->cards_) {
+        std::string formatted_card = card_ptr.FormatText();
         size_t formatted_len = formatted_card.size();
         memcpy(buf + pos, formatted_card.c_str(), formatted_len);
         pos += formatted_len;
@@ -251,15 +252,15 @@ auto Store::CardsFormatted(unsigned char *buf) -> uintmax_t {
 
 void Store::LoadCards(unsigned char *data) {
     if (data == nullptr) {
-        return; 
+        return;
     }
 
     char *rest = nullptr;
     char *portion = strtok_r(reinterpret_cast<char *>(data), ";", &rest);
 
     while (portion != nullptr) {
-        auto *card = static_cast<CreditCard *>(calloc(1, sizeof(CreditCard)));
-        card->InitFromText(portion);
+        CreditCard card;
+        card.InitFromText(portion);
         this->AddCard(card);
 
         portion = strtok_r(nullptr, ";", &rest);

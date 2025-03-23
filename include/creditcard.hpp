@@ -1,9 +1,13 @@
 #ifndef CREDITCARD_HPP
 #define CREDITCARD_HPP
 
+#include "ui.hpp"
+
 #include <string>
+#include <vector>
 
 class CreditCard {
+    friend class CreditCardViewModel;
     friend class CreditCardTest;
 
   public:
@@ -13,9 +17,9 @@ class CreditCard {
     auto SetMonth(const std::string &month) -> int;
     auto SetYear(const std::string &year) -> int;
 
-    auto GetName() -> std::string;
+    auto GetName() const -> std::string;
 
-    auto FormatText() -> std::string;
+    auto FormatText() const -> std::string;
     void InitFromText(char *text);
 
   private:
@@ -38,6 +42,13 @@ class CreditCard {
 
     void DetermineNetwork();
     auto GetNetworkString() -> std::string;
+};
+
+class CreditCardViewModel {
+  public:
+    CreditCardViewModel() = default;
+
+    auto GetDisplayFields(const CreditCard &card) const -> std::vector<std::pair<std::string, std::string>>;
 };
 
 #endif // CREDITCARD_HPP

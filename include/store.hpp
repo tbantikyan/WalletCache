@@ -39,17 +39,18 @@ class Store {
     auto InitNewStore(unsigned char *password) -> int;
     auto LoadStore(unsigned char *password) -> LoadStoreStatus;
     auto SaveStore() -> SaveStoreStatus;
-    void AddCard(CreditCard *card);
+    void AddCard(const CreditCard &card);
 
     auto StoreExists(bool is_tmp) -> bool;
     auto DeleteStore(bool is_tmp) -> int;
 
-    auto CardsDisplayString() -> std::string;
+    auto CardsDisplayList() const -> std::vector<std::pair<uint32_t, std::string>>;
+    auto GetCardById(uint32_t card_id) const -> const CreditCard&;
 
   private:
     std::shared_ptr<ICrypto> crypto_;
     std::unique_ptr<IFileIO> fileio_;
-    std::vector<struct CreditCard *> cards_;
+    std::vector<struct CreditCard> cards_;
 
     std::unique_ptr<unsigned char[]> hashed_password_;
     std::unique_ptr<unsigned char[]> salt_;
