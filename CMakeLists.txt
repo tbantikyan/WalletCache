@@ -13,8 +13,8 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/dacap/clip.git
   GIT_TAG        a1a5fd1
 )
-
 FetchContent_MakeAvailable(clip)
+set(CLIP_TESTS OFF CACHE BOOL "Disable clip tests" FORCE)
 
 # Create a library instead of putting everything in the executable
 file(GLOB SOURCES ${CMAKE_SOURCE_DIR}/src/*.cpp)
