@@ -3,7 +3,6 @@
 #include "verification.hpp"
 
 #include <iostream>
-#include <unordered_map>
 
 auto UI::StartMenu(const std::string &status_msg, bool profile_exists) -> UI::StartMenuOption {
     ClearScreen();
@@ -42,18 +41,13 @@ auto UI::ProfileMenu(const std::string &status_msg) -> UI::ProfileMenuOption {
     return static_cast<UI::ProfileMenuOption>(this->GetSelection(0, 3));
 }
 
-auto UI::ListCardsMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) -> int {
+auto UI::CardListMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) -> int {
     ClearScreen();
 
     auto choice_mapping = std::unordered_map<int, uint32_t>();
     std::cout << UIStrings::LIST_CARDS_RETURN;
 
-    int opt = 1;
-    for (const std::pair<uint32_t, std::string> &card_item : cards_list) {
-        std::cout << "[" << opt << "] " << card_item.second << "\n";
-        choice_mapping.insert(std::make_pair(opt, card_item.first));
-        opt++;
-    }
+    this->ListCards(cards_list, choice_mapping, /* starting_option */ 1);
 
     int selection = this->GetSelection(0, static_cast<int>(cards_list.size()));
     if (selection == 0) {
@@ -153,6 +147,16 @@ auto UI::PromptConfirmation(const std::string &msg) -> bool {
     std::cout << UIStrings::CONFIRMATION_CONFIRM;
 
     return this->GetSelection(0, 1) == 1;
+}
+
+void UI::ListCards(const std::vector<std::pair<uint32_t, std::string>> &cards_list,
+                         std::unordered_map<int, uint32_t> &choice_mapping, int starting_option) {
+    int opt = starting_option;
+    for (const std::pair<uint32_t, std::string> &card_item : cards_list) {
+        std::cout << "[" << opt << "] " << card_item.second << "\n";
+        choice_mapping.insert(std::make_pair(opt, card_item.first));
+        opt++;
+    }
 }
 
 auto UI::GetSelection(int lower, int upper) -> int {

@@ -115,7 +115,7 @@ auto HandleCardInfo(Store &store, UI &ui, uint32_t card_id) -> int {
 auto HandleCardsList(Store &store, UI &ui) -> int {
     std::vector<std::pair<uint32_t, std::string>> cards_list = store.CardsDisplayList();
     while (true) {
-        int selection = static_cast<int>(ui.ListCardsMenu(cards_list));
+        int selection = static_cast<int>(ui.CardListMenu(cards_list));
         if (selection == -1) {
             break;
         }

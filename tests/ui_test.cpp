@@ -232,8 +232,8 @@ TEST_F(UITest, ProfileMenu_InputWithErrorMessage) {
     EXPECT_EQ(selection, UI::ProfileMenuOption::OPT_PROFILE_EXIT);
 }
 
-// ListCardsMenu
-TEST_F(UITest, ListCardsMenu_InputReturn) {
+// CardListMenu
+TEST_F(UITest, CardListMenu_InputReturn) {
     UI ui;
     const std::vector<std::pair<uint32_t, std::string>> test_list = {
         std::make_pair(0, "Card 1"),
@@ -241,7 +241,7 @@ TEST_F(UITest, ListCardsMenu_InputReturn) {
     };
     input_stream_ << "0\n";
 
-    int selection = ui.ListCardsMenu(test_list);
+    int selection = ui.CardListMenu(test_list);
 
     EXPECT_NE(output_stream_.str().find(UIStrings::LIST_CARDS_RETURN), std::string::npos);
     EXPECT_NE(output_stream_.str().find("Card 1"), std::string::npos);
@@ -249,7 +249,7 @@ TEST_F(UITest, ListCardsMenu_InputReturn) {
     EXPECT_EQ(selection, -1);
 }
 
-TEST_F(UITest, ListCardsMenu_TwoCards_InputFirstCard) {
+TEST_F(UITest, CardListMenu_TwoCards_InputFirstCard) {
     UI ui;
     const std::vector<std::pair<uint32_t, std::string>> test_list = {
         std::make_pair(0, "Card 1"),
@@ -257,7 +257,7 @@ TEST_F(UITest, ListCardsMenu_TwoCards_InputFirstCard) {
     };
     input_stream_ << "1\n";
 
-    int selection = ui.ListCardsMenu(test_list);
+    int selection = ui.CardListMenu(test_list);
 
     EXPECT_NE(output_stream_.str().find(UIStrings::LIST_CARDS_RETURN), std::string::npos);
     EXPECT_NE(output_stream_.str().find("Card 1"), std::string::npos);
@@ -265,7 +265,7 @@ TEST_F(UITest, ListCardsMenu_TwoCards_InputFirstCard) {
     EXPECT_EQ(selection, 0);
 }
 
-TEST_F(UITest, ListCardsMenu_TwoCards_InputSecondCard) {
+TEST_F(UITest, CardListMenu_TwoCards_InputSecondCard) {
     UI ui;
     const std::vector<std::pair<uint32_t, std::string>> test_list = {
         std::make_pair(0, "Card 1"),
@@ -273,7 +273,7 @@ TEST_F(UITest, ListCardsMenu_TwoCards_InputSecondCard) {
     };
     input_stream_ << "2\n";
 
-    int selection = ui.ListCardsMenu(test_list);
+    int selection = ui.CardListMenu(test_list);
 
     EXPECT_NE(output_stream_.str().find(UIStrings::LIST_CARDS_RETURN), std::string::npos);
     EXPECT_NE(output_stream_.str().find("Card 1"), std::string::npos);

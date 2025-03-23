@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 struct UIStrings {
@@ -82,7 +83,7 @@ class UI {
     auto StartMenu(const std::string &status_msg, bool profile_exists) -> StartMenuOption;
     void CreateProfileMenu(const std::string &status_msg, std::string &password, std::string &confirm_password);
     auto ProfileMenu(const std::string &status_msg) -> ProfileMenuOption;
-    auto ListCardsMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) -> int;
+    auto CardListMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) -> int;
     auto CardInfoMenu(const std::vector<std::pair<std::string, std::string>> &card_fields, uint32_t *selected_field,
                       bool fields_visible) -> CardInfoMenuOption;
 
@@ -97,6 +98,8 @@ class UI {
     auto PromptConfirmation(const std::string &msg) -> bool;
 
   private:
+    void ListCards(const std::vector<std::pair<uint32_t, std::string>> &cards_list,
+                         std::unordered_map<int, uint32_t> &choice_mapping, int starting_option);
     auto GetSelection(int lower, int upper) -> int;
     inline auto PromptInput() -> std::string;
     inline auto PromptInputMasked() -> std::string;
