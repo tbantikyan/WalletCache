@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 enable_testing()
+set(CLIP_TESTS OFF CACHE BOOL "Disable clip tests" FORCE)
 
 include(FetchContent)
 
@@ -14,7 +15,6 @@ FetchContent_Declare(
   GIT_TAG        a1a5fd1
 )
 FetchContent_MakeAvailable(clip)
-set(CLIP_TESTS OFF CACHE BOOL "Disable clip tests" FORCE)
 
 # Create a library instead of putting everything in the executable
 file(GLOB SOURCES ${CMAKE_SOURCE_DIR}/src/*.cpp)
