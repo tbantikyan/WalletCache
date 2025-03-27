@@ -30,7 +30,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: WalletCache-ubuntu-${{ github.ref_name }}
+        name: ubuntu-bin 
         path: WalletCache-ubuntu-${{ github.ref_name }}.zip
 
   build-macos:
@@ -57,7 +57,7 @@ jobs:
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: WalletCache-macos-${{ github.ref_name }}
+        name: macos-bin
         path: WalletCache-macos-${{ github.ref_name }}.
 
   create-release:
@@ -76,5 +76,5 @@ jobs:
       with:
         tag_name: ${{ github.ref_name }}
         files: |
-          artifacts/WalletCache-ubuntu-${{ github.ref_name }}.zip
-          artifacts/WalletCache-macos-${{ github.ref_name }}.zip
+          artifacts/ubuntu-bin/WalletCache-ubuntu-${{ github.ref_name }}.zip
+          artifacts/macos-bin/WalletCache-macos-${{ github.ref_name }}.zip
