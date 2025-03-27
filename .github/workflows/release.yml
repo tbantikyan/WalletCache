@@ -1,0 +1,73 @@
+name: Release Builds
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger on tags starting with 'v'
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y libsodium-dev libxcb1-dev libpng-dev
+
+    - name: Configure CMake (Release)
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build project
+      run: cmake --build build
+
+    - name: Package binary
+      run: |
+        mkdir release
+        cp build/WalletCache release/
+        zip -j WalletCache-ubuntu-${{ github.ref_name }}.zip release/*
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: WalletCache-ubuntu-${{ github.ref_name }}
+        path: WalletCache-ubuntu-${{ github.ref_name }}.zip
+
+    - name: Create Release
+      if: success()
+      uses: softprops/action-gh-release@v2  
+      with:
+        file: WalletCache-ubuntu-${{ github.ref_name }}.zip
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: brew install libsodium libpng
+
+    - name: Configure CMake (Release)
+      run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build project
+      run: cmake --build build
+
+    - name: Package binary
+      run: |
+        mkdir release
+        cp build/WalletCache release/
+        zip -j WalletCache-macos-${{ github.ref_name }}.zip release/*
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: WalletCache-macos-${{ github.ref_name }}
+        path: WalletCache-macos-${{ github.ref_name }}.
+
+    - name: Create Release
+      if: success()
+      uses: softprops/action-gh-release@v2  
+      with:
+        file: WalletCache-macos-${{ github.ref_name }}.zip
