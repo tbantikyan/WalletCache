@@ -98,10 +98,9 @@ auto HandleCardInfo(Store &store, UI &ui, uint32_t card_id) -> int {
         switch (selection) {
         case UI::OPT_CARD_RETURN:
             return 0;
-            break;
         case UI::OPT_CARD_DELETE:
-            // TODO(tigran): Card delete
-            break;
+            store.DeleteCard(card_id);
+            return 0;
         case UI::OPT_CARD_TOGGLE_VISIBLE:
             fields_visible = !fields_visible;
             break;
@@ -113,8 +112,8 @@ auto HandleCardInfo(Store &store, UI &ui, uint32_t card_id) -> int {
 }
 
 auto HandleCardsList(Store &store, UI &ui) -> int {
-    std::vector<std::pair<uint32_t, std::string>> cards_list = store.CardsDisplayList();
     while (true) {
+        std::vector<std::pair<uint32_t, std::string>> cards_list = store.CardsDisplayList();
         int selection = static_cast<int>(ui.CardListMenu(cards_list));
         if (selection == -1) {
             break;
