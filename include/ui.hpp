@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 struct UIStrings {
@@ -55,6 +56,10 @@ struct UIStrings {
     static const inline std::string CARD_YEAR_LABEL = "Expiration Year: ";
 
     static const inline std::string HIDDEN_FIELD = "•••••";
+
+    static const inline std::string DELETE_CARD_MESSAGE = "Select a card to delete:\n";
+    static const inline std::string DELETE_CARD_RETURN = "[0] RETURN\n";
+    static const inline std::string DELETE_CARD_CONFIRM_SELECTION = "Are you sure you wnat to delete this card?\n";
 };
 
 class UI {
@@ -82,9 +87,10 @@ class UI {
     auto StartMenu(const std::string &status_msg, bool profile_exists) -> StartMenuOption;
     void CreateProfileMenu(const std::string &status_msg, std::string &password, std::string &confirm_password);
     auto ProfileMenu(const std::string &status_msg) -> ProfileMenuOption;
-    auto ListCardsMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) -> int;
+    auto CardListMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) -> int;
     auto CardInfoMenu(const std::vector<std::pair<std::string, std::string>> &card_fields, uint32_t *selected_field,
                       bool fields_visible) -> CardInfoMenuOption;
+    auto CardDeleteMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) -> int;
 
     void DisplayHashing();
 
@@ -97,6 +103,8 @@ class UI {
     auto PromptConfirmation(const std::string &msg) -> bool;
 
   private:
+    void ListCards(const std::vector<std::pair<uint32_t, std::string>> &cards_list,
+                         std::unordered_map<int, uint32_t> &choice_mapping, int starting_option);
     auto GetSelection(int lower, int upper) -> int;
     inline auto PromptInput() -> std::string;
     inline auto PromptInputMasked() -> std::string;

@@ -127,6 +127,11 @@ auto Store::SaveStore() -> Store::SaveStoreStatus {
 
 void Store::AddCard(const CreditCard &card) { this->cards_.emplace_back(card); }
 
+void Store::DeleteCard(uint32_t card_id) {
+    this->cards_.erase(this->cards_.begin() + card_id);
+    this->SaveStore();
+}
+
 auto Store::StoreExists(bool is_tmp) -> bool { return this->fileio_->GetExists(is_tmp); }
 
 auto Store::DeleteStore(bool is_tmp) -> int { return this->fileio_->Delete(is_tmp) ? 0 : -1; }

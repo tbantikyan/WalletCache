@@ -389,6 +389,79 @@ TEST_F(StoreTest, AddCard_TwoCards_ExpectCardsDisplayStringNotEmpty) {
     EXPECT_FALSE(store_->CardsDisplayList().empty());
 }
 
+// DeleteCard
+TEST_F(StoreTest, Delete_OneCard_ExpectCardNotInDisplayString) {
+    CreditCard card;
+    std::string card_name = "Card1";
+    card.SetName(card_name);
+
+    store_->AddCard(card);
+    store_->DeleteCard(0);
+
+    std::vector<std::pair<uint32_t, std::string>> cards_display_list = store_->CardsDisplayList();
+    bool card_found = false;
+    for (const auto &card_display : cards_display_list) {
+        card_found = card_found || card_display.second == card_name;
+    }
+    EXPECT_FALSE(card_found);
+}
+
+TEST_F(StoreTest, DeleteCard_TwoCards_ExpectOnlyDeletedCardNotInDisplayString) {
+    CreditCard card1;
+    std::string card1_name = "Card1";
+    card1.SetName(card1_name);
+    store_->AddCard(card1);
+
+    CreditCard card2;
+    std::string card2_name = "Card2";
+    card2.SetName(card2_name);
+    store_->AddCard(card2);
+
+    store_->DeleteCard(0);
+
+    std::vector<std::pair<uint32_t, std::string>> cards_display_list = store_->CardsDisplayList();
+    bool card1_found = false;
+    bool card2_found = false;
+    for (const auto &card_display : cards_display_list) {
+        card1_found = card1_found || card_display.second == card1_name;
+        card2_found = card2_found || card_display.second == card2_name;
+    }
+    EXPECT_FALSE(card1_found);
+    EXPECT_TRUE(card2_found);
+}
+
+TEST_F(StoreTest, DeleteCard_ThreeCards_ExpectOnlyDeletedCardNotInDisplayString) {
+    CreditCard card1;
+    std::string card1_name = "Card1";
+    card1.SetName(card1_name);
+    store_->AddCard(card1);
+
+    CreditCard card2;
+    std::string card2_name = "Card2";
+    card2.SetName(card2_name);
+    store_->AddCard(card2);
+
+    CreditCard card3;
+    std::string card3_name = "Card3";
+    card3.SetName(card3_name);
+    store_->AddCard(card3);
+
+    store_->DeleteCard(1);
+
+    std::vector<std::pair<uint32_t, std::string>> cards_display_list = store_->CardsDisplayList();
+    bool card1_found = false;
+    bool card2_found = false;
+    bool card3_found = false;
+    for (const auto &card_display : cards_display_list) {
+        card1_found = card1_found || card_display.second == card1_name;
+        card2_found = card2_found || card_display.second == card2_name;
+        card3_found = card3_found || card_display.second == card3_name;
+    }
+    EXPECT_TRUE(card1_found);
+    EXPECT_FALSE(card2_found);
+    EXPECT_TRUE(card3_found);
+}
+
 // StoreExists
 TEST_F(StoreTest, StoreExists_MainFileExists_ReturnsTrue) {
     EXPECT_CALL(*mock_file_io_ptr_, GetExists(false)).WillOnce(Return(true));

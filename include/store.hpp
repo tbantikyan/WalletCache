@@ -39,7 +39,9 @@ class Store {
     auto InitNewStore(unsigned char *password) -> int;
     auto LoadStore(unsigned char *password) -> LoadStoreStatus;
     auto SaveStore() -> SaveStoreStatus;
+
     void AddCard(const CreditCard &card);
+    void DeleteCard(uint32_t card_id);
 
     auto StoreExists(bool is_tmp) -> bool;
     auto DeleteStore(bool is_tmp) -> int;
