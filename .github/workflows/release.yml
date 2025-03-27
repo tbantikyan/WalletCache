@@ -33,12 +33,6 @@ jobs:
         name: WalletCache-ubuntu-${{ github.ref_name }}
         path: WalletCache-ubuntu-${{ github.ref_name }}.zip
 
-    - name: Create Release
-      if: success()
-      uses: softprops/action-gh-release@v2  
-      with:
-        file: WalletCache-ubuntu-${{ github.ref_name }}.zip
-
   build-macos:
     runs-on: macos-latest
     steps:
@@ -66,8 +60,21 @@ jobs:
         name: WalletCache-macos-${{ github.ref_name }}
         path: WalletCache-macos-${{ github.ref_name }}.
 
-    - name: Create Release
-      if: success()
-      uses: softprops/action-gh-release@v2  
+  create-release:
+    needs: [build-ubuntu, build-macos]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
       with:
-        file: WalletCache-macos-${{ github.ref_name }}.zip
+        path: artifacts
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ github.ref_name }}
+        files: |
+          artifacts/WalletCache-ubuntu-${{ github.ref_name }}.zip
+          artifacts/WalletCache-macos-${{ github.ref_name }}.zip
