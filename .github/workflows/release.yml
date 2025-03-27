@@ -58,7 +58,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: macos-bin
-        path: WalletCache-macos-${{ github.ref_name }}.
+        path: WalletCache-macos-${{ github.ref_name }}.zip
 
   create-release:
     needs: [build-ubuntu, build-macos]
