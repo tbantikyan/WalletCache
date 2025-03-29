@@ -29,7 +29,7 @@ auto ValidateInputAlnumOnly(std::string input) -> bool {
     if (input.empty()) {
         return false;
     }
-    return std::all_of(input.begin(), input.end(), isalnum);
+    return std::all_of(input.begin(), input.end(), [](int x) { return isalnum(x) != 0 || x == 0x20; });
 }
 
 auto ValidateInputDigitsOnly(std::string input) -> bool {

@@ -135,7 +135,7 @@ auto HandleCardAdd(Store &store, UI &ui) -> int {
             return 1;
         }
         if (card.SetName(card_name) != 0) {
-            error_msg = "ERR: Name should contain only letters and numbers!\n";
+            error_msg = "ERR: Name should contain only letters, numbers, and spaces!\n";
         } else {
             break;
         }

@@ -28,8 +28,8 @@ struct UIStrings {
     static const inline std::string CARD_MONTH_PROMPT =
         "Enter card expiration month [Ex: 10 for october] (or 0 to cancel):\n";
     static const inline std::string CARD_NAME_PROMPT =
-        "Optional: enter a name for the card using only letters or numbers (or 0 "
-        "to cancel):\n";
+        "Optional: enter a name for the card using only letters, numbers, and "
+        "spaces (or 0 to cancel):\n";
     static const inline std::string CARD_NUMBER_PROMPT = "Enter card number (or 0 to cancel):\n";
     static const inline std::string CARD_YEAR_PROMPT = "Enter card expiration year [Ex: 2025] (or 0 to cancel):\n";
 
@@ -104,7 +104,7 @@ class UI {
 
   private:
     void ListCards(const std::vector<std::pair<uint32_t, std::string>> &cards_list,
-                         std::unordered_map<int, uint32_t> &choice_mapping, int starting_option);
+                   std::unordered_map<int, uint32_t> &choice_mapping, int starting_option);
     auto GetSelection(int lower, int upper) -> int;
     inline auto PromptInput() -> std::string;
     inline auto PromptInputMasked() -> std::string;
