@@ -15,6 +15,11 @@ TEST_F(CreditCardTest, SetName_ValidAlnum_Returns0) {
     EXPECT_EQ(card.SetName("JohnDoe123"), 0);
 }
 
+TEST_F(CreditCardTest, SetName_ValidAlnumWithSpace_Returns0) {
+    CreditCard card;
+    EXPECT_EQ(card.SetName("John Doe123"), 0);
+}
+
 TEST_F(CreditCardTest, SetName_InvalidChars_ReturnsNegative1) {
     CreditCard card;
     EXPECT_EQ(card.SetName("John@Doe"), -1);
