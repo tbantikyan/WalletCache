@@ -25,14 +25,14 @@ auto ValidateCreditCardNumber(const std::string &number) -> bool {
     return (sum % 10 == 0);
 }
 
-auto ValidateInputAlnumOnly(std::string input) -> bool {
+auto ValidateInputAlnumOnly(const std::string &input) -> bool {
     if (input.empty()) {
         return false;
     }
     return std::all_of(input.begin(), input.end(), [](int x) { return isalnum(x) != 0 || x == 0x20; });
 }
 
-auto ValidateInputDigitsOnly(std::string input) -> bool {
+auto ValidateInputDigitsOnly(const std::string &input) -> bool {
     if (input.empty()) {
         return false;
     }
