@@ -18,7 +18,7 @@ auto GetStorePath() -> std::string {
     return GetFilePath(homepath, Store::STORE_FILE_NAME);
 }
 
-auto CheckProfileReplacement(UI ui, bool profile_exists, UI::StartMenuOption input) -> int {
+auto CheckProfileReplacement(const UI &ui, bool profile_exists, UI::StartMenuOption input) -> int {
     if (profile_exists && input == UI::OPT_START_NEW_PROFILE) {
         std::string msg = "Are you sure you want to create a new profile? This will "
                           "replace the existing profile.\n";
@@ -29,7 +29,7 @@ auto CheckProfileReplacement(UI ui, bool profile_exists, UI::StartMenuOption inp
     return 0;
 }
 
-void HandlePasswordSetup(UI &ui, unsigned char *password) {
+void HandlePasswordSetup(const UI &ui, unsigned char *password) {
     std::string error_msg;
     std::string input_password;
     std::string input_confirm;
@@ -61,7 +61,8 @@ void HandlePasswordSetup(UI &ui, unsigned char *password) {
     input_confirm.clear();
 }
 
-auto HandleNewProfile(Store &store, UI &ui, const std::shared_ptr<SodiumCrypto> &crypto, bool profile_exists) -> int {
+auto HandleNewProfile(Store &store, const UI &ui, const std::shared_ptr<SodiumCrypto> &crypto, bool profile_exists)
+    -> int {
     if (profile_exists) {
         store.DeleteStore(false);
     }
@@ -75,7 +76,7 @@ auto HandleNewProfile(Store &store, UI &ui, const std::shared_ptr<SodiumCrypto> 
     return res;
 }
 
-auto HandleLogin(Store &store, UI &ui) -> Store::LoadStoreStatus {
+auto HandleLogin(Store &store, const UI &ui) -> Store::LoadStoreStatus {
     std::string input_password;
     ui.PromptLogin(input_password);
 
@@ -85,7 +86,7 @@ auto HandleLogin(Store &store, UI &ui) -> Store::LoadStoreStatus {
     return store.LoadStore(password);
 }
 
-auto HandleCardInfo(Store &store, UI &ui, uint32_t card_id) -> int {
+auto HandleCardInfo(Store &store, const UI &ui, uint32_t card_id) -> int {
     const CreditCard &card = store.GetCardById(card_id);
 
     CreditCardViewModel card_view;
@@ -111,7 +112,7 @@ auto HandleCardInfo(Store &store, UI &ui, uint32_t card_id) -> int {
     }
 }
 
-auto HandleCardsList(Store &store, UI &ui) -> int {
+auto HandleCardsList(Store &store, const UI &ui) -> int {
     while (true) {
         std::vector<std::pair<uint32_t, std::string>> cards_list = store.CardsDisplayList();
         int selection = static_cast<int>(ui.CardListMenu(cards_list));
@@ -124,7 +125,7 @@ auto HandleCardsList(Store &store, UI &ui) -> int {
     return 0;
 }
 
-auto HandleCardAdd(Store &store, UI &ui) -> int {
+auto HandleCardAdd(Store &store, const UI &ui) -> int {
     CreditCard card;
 
     std::string card_name;
@@ -198,7 +199,7 @@ auto HandleCardAdd(Store &store, UI &ui) -> int {
     return 0;
 }
 
-auto HandleCardDelete(Store &store, UI &ui) -> int {
+auto HandleCardDelete(Store &store, const UI &ui) -> int {
     while (true) {
         std::vector<std::pair<uint32_t, std::string>> cards_list = store.CardsDisplayList();
         int selection = ui.CardDeleteMenu(cards_list);
