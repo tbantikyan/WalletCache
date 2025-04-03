@@ -146,7 +146,7 @@ auto Store::CardsDisplayList() const -> std::vector<std::pair<uint32_t, std::str
     return result;
 }
 
-auto Store::GetCardById(uint32_t card_id) const -> const CreditCard& {
+auto Store::GetCardById(uint32_t card_id) const -> const CreditCard & {
     const CreditCard &card = this->cards_[card_id];
     return card;
 }

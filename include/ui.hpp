@@ -84,30 +84,30 @@ class UI {
         OPT_CARD_COPY,
     };
 
-    auto StartMenu(const std::string &status_msg, bool profile_exists) -> StartMenuOption;
-    void CreateProfileMenu(const std::string &status_msg, std::string &password, std::string &confirm_password);
-    auto ProfileMenu(const std::string &status_msg) -> ProfileMenuOption;
-    auto CardListMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) -> int;
+    auto StartMenu(const std::string &status_msg, bool profile_exists) const -> StartMenuOption;
+    void CreateProfileMenu(const std::string &status_msg, std::string &password, std::string &confirm_password) const;
+    auto ProfileMenu(const std::string &status_msg) const -> ProfileMenuOption;
+    auto CardListMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) const -> int;
     auto CardInfoMenu(const std::vector<std::pair<std::string, std::string>> &card_fields, uint32_t *selected_field,
-                      bool fields_visible) -> CardInfoMenuOption;
-    auto CardDeleteMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) -> int;
+                      bool fields_visible) const -> CardInfoMenuOption;
+    auto CardDeleteMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) const -> int;
 
-    void DisplayHashing();
+    void DisplayHashing() const;
 
-    void PromptCardCvv(const std::string &status_msg, std::string &cvv);
-    void PromptCardMonth(const std::string &status_msg, std::string &month);
-    void PromptCardName(const std::string &status_msg, std::string &card_name);
-    void PromptCardNumber(const std::string &status_msg, std::string &card_number);
-    void PromptCardYear(const std::string &status_msg, std::string &year);
-    void PromptLogin(std::string &password);
-    auto PromptConfirmation(const std::string &msg) -> bool;
+    void PromptCardCvv(const std::string &status_msg, std::string &cvv) const;
+    void PromptCardMonth(const std::string &status_msg, std::string &month) const;
+    void PromptCardName(const std::string &status_msg, std::string &card_name) const;
+    void PromptCardNumber(const std::string &status_msg, std::string &card_number) const;
+    void PromptCardYear(const std::string &status_msg, std::string &year) const;
+    void PromptLogin(std::string &password) const;
+    auto PromptConfirmation(const std::string &msg) const -> bool;
 
   private:
     void ListCards(const std::vector<std::pair<uint32_t, std::string>> &cards_list,
-                   std::unordered_map<int, uint32_t> &choice_mapping, int starting_option);
-    auto GetSelection(int lower, int upper) -> int;
-    inline auto PromptInput() -> std::string;
-    inline auto PromptInputMasked() -> std::string;
+                   std::unordered_map<int, uint32_t> &choice_mapping, int starting_option) const;
+    auto GetSelection(int lower, int upper) const -> int;
+    inline auto PromptInput() const -> std::string;
+    inline auto PromptInputMasked() const -> std::string;
 };
 
 #endif // UI_HPP

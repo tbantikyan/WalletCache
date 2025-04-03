@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-auto UI::StartMenu(const std::string &status_msg, bool profile_exists) -> UI::StartMenuOption {
+auto UI::StartMenu(const std::string &status_msg, bool profile_exists) const -> UI::StartMenuOption {
     ClearScreen();
     std::cout << status_msg;
     std::cout << UIStrings::WELCOME;
@@ -18,7 +18,7 @@ auto UI::StartMenu(const std::string &status_msg, bool profile_exists) -> UI::St
     return static_cast<UI::StartMenuOption>(this->GetSelection(0, profile_exists ? 2 : 1));
 }
 
-void UI::CreateProfileMenu(const std::string &status_msg, std::string &password, std::string &confirm_password) {
+void UI::CreateProfileMenu(const std::string &status_msg, std::string &password, std::string &confirm_password) const {
     ClearScreen();
 
     std::cout << status_msg;
@@ -28,7 +28,7 @@ void UI::CreateProfileMenu(const std::string &status_msg, std::string &password,
     confirm_password = this->PromptInputMasked();
 }
 
-auto UI::ProfileMenu(const std::string &status_msg) -> UI::ProfileMenuOption {
+auto UI::ProfileMenu(const std::string &status_msg) const -> UI::ProfileMenuOption {
     ClearScreen();
     std::cout << status_msg;
     std::cout << UIStrings::WELCOME;
@@ -41,7 +41,7 @@ auto UI::ProfileMenu(const std::string &status_msg) -> UI::ProfileMenuOption {
     return static_cast<UI::ProfileMenuOption>(this->GetSelection(0, 3));
 }
 
-auto UI::CardListMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) -> int {
+auto UI::CardListMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) const -> int {
     ClearScreen();
 
     auto choice_mapping = std::unordered_map<int, uint32_t>();
@@ -57,7 +57,7 @@ auto UI::CardListMenu(const std::vector<std::pair<uint32_t, std::string>> &cards
 }
 
 auto UI::CardInfoMenu(const std::vector<std::pair<std::string, std::string>> &card_fields, uint32_t *selected_field,
-                      bool fields_visible) -> UI::CardInfoMenuOption {
+                      bool fields_visible) const -> UI::CardInfoMenuOption {
     ClearScreen();
 
     auto choice_mapping = std::unordered_map<int, uint32_t>();
@@ -91,7 +91,7 @@ auto UI::CardInfoMenu(const std::vector<std::pair<std::string, std::string>> &ca
     return OPT_CARD_COPY;
 }
 
-auto UI::CardDeleteMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) -> int {
+auto UI::CardDeleteMenu(const std::vector<std::pair<uint32_t, std::string>> &cards_list) const -> int {
     while (true) {
         ClearScreen();
 
@@ -112,9 +112,9 @@ auto UI::CardDeleteMenu(const std::vector<std::pair<uint32_t, std::string>> &car
     }
 }
 
-void UI::DisplayHashing() { std::cout << UIStrings::HASHING; }
+void UI::DisplayHashing() const { std::cout << UIStrings::HASHING; }
 
-void UI::PromptCardCvv(const std::string &status_msg, std::string &cvv) {
+void UI::PromptCardCvv(const std::string &status_msg, std::string &cvv) const {
     ClearScreen();
 
     std::cout << status_msg;
@@ -122,7 +122,7 @@ void UI::PromptCardCvv(const std::string &status_msg, std::string &cvv) {
     cvv = this->PromptInput();
 }
 
-void UI::PromptCardMonth(const std::string &status_msg, std::string &month) {
+void UI::PromptCardMonth(const std::string &status_msg, std::string &month) const {
     ClearScreen();
 
     std::cout << status_msg;
@@ -130,7 +130,7 @@ void UI::PromptCardMonth(const std::string &status_msg, std::string &month) {
     month = this->PromptInput();
 }
 
-void UI::PromptCardName(const std::string &status_msg, std::string &card_name) {
+void UI::PromptCardName(const std::string &status_msg, std::string &card_name) const {
     ClearScreen();
 
     std::cout << status_msg;
@@ -138,7 +138,7 @@ void UI::PromptCardName(const std::string &status_msg, std::string &card_name) {
     card_name = this->PromptInput();
 }
 
-void UI::PromptCardNumber(const std::string &status_msg, std::string &card_number) {
+void UI::PromptCardNumber(const std::string &status_msg, std::string &card_number) const {
     ClearScreen();
 
     std::cout << status_msg;
@@ -146,7 +146,7 @@ void UI::PromptCardNumber(const std::string &status_msg, std::string &card_numbe
     card_number = this->PromptInput();
 }
 
-void UI::PromptCardYear(const std::string &status_msg, std::string &year) {
+void UI::PromptCardYear(const std::string &status_msg, std::string &year) const {
     ClearScreen();
 
     std::cout << status_msg;
@@ -154,14 +154,14 @@ void UI::PromptCardYear(const std::string &status_msg, std::string &year) {
     year = this->PromptInput();
 }
 
-void UI::PromptLogin(std::string &password) {
+void UI::PromptLogin(std::string &password) const {
     ClearScreen();
 
     std::cout << UIStrings::PASSWORD_PROMPT;
     password = this->PromptInputMasked();
 }
 
-auto UI::PromptConfirmation(const std::string &msg) -> bool {
+auto UI::PromptConfirmation(const std::string &msg) const -> bool {
     std::cout << "\n";
     std::cout << msg;
     std::cout << UIStrings::CONFIRMATION_CANCEL;
@@ -171,7 +171,7 @@ auto UI::PromptConfirmation(const std::string &msg) -> bool {
 }
 
 void UI::ListCards(const std::vector<std::pair<uint32_t, std::string>> &cards_list,
-                   std::unordered_map<int, uint32_t> &choice_mapping, int starting_option) {
+                   std::unordered_map<int, uint32_t> &choice_mapping, int starting_option) const {
     int opt = starting_option;
     for (const std::pair<uint32_t, std::string> &card_item : cards_list) {
         std::cout << "[" << opt << "] " << card_item.second << "\n";
@@ -180,7 +180,7 @@ void UI::ListCards(const std::vector<std::pair<uint32_t, std::string>> &cards_li
     }
 }
 
-auto UI::GetSelection(int lower, int upper) -> int {
+auto UI::GetSelection(int lower, int upper) const -> int {
     std::string input_string;
     bool valid_input;
     do {
@@ -195,7 +195,7 @@ auto UI::GetSelection(int lower, int upper) -> int {
     return std::stoi(input_string);
 }
 
-auto UI::PromptInput() -> std::string {
+auto UI::PromptInput() const -> std::string {
     std::cout << "> ";
     std::string input;
     std::getline(std::cin, input);
@@ -203,7 +203,7 @@ auto UI::PromptInput() -> std::string {
     return input;
 }
 
-auto UI::PromptInputMasked() -> std::string {
+auto UI::PromptInputMasked() const -> std::string {
     EnableStdinEcho(false);
     std::string input = this->PromptInput();
     EnableStdinEcho(true);

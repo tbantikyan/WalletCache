@@ -15,8 +15,8 @@ enum NewPasswordStatus {
 
 auto ValidateCreditCardNumber(const std::string &number) -> bool;
 
-auto ValidateInputAlnumOnly(std::string input) -> bool;
-auto ValidateInputDigitsOnly(std::string input) -> bool;
+auto ValidateInputAlnumOnly(const std::string &input) -> bool;
+auto ValidateInputDigitsOnly(const std::string &input) -> bool;
 auto ValidateInputInRange(const std::string &input, int lower, int upper) -> bool;
 
 auto VerifyNewPassword(const std::string &password, const std::string &confirm_password) -> NewPasswordStatus;
