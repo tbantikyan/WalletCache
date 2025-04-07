@@ -8,6 +8,7 @@
 #include <fstream>
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 class Store {
@@ -53,6 +54,7 @@ class Store {
     std::shared_ptr<ICrypto> crypto_;
     std::unique_ptr<IFileIO> fileio_;
     std::vector<struct CreditCard> cards_;
+    std::unordered_set<int> deleted_;
 
     std::unique_ptr<unsigned char[]> hashed_password_;
     std::unique_ptr<unsigned char[]> salt_;
