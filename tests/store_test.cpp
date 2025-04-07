@@ -276,11 +276,6 @@ TEST_F(StoreTest, LoadStore_ReadDataFails_ReturnsDataDecryptErr) {
 
 // SaveStore
 TEST_F(StoreTest, SaveStore_NoData_ReturnsValid) {
-    EXPECT_CALL(*mock_file_io_ptr_, OpenWriteTemp()).WillOnce(Return(0));
-    ValidWriteHeaderExpects();
-    EXPECT_CALL(*mock_file_io_ptr_, CloseWriteTemp()).Times(1);
-    EXPECT_CALL(*mock_file_io_ptr_, CommitTemp()).WillOnce(Return(0));
-
     EXPECT_EQ(store_->SaveStore(), Store::SAVE_STORE_VALID);
 }
 
@@ -314,11 +309,17 @@ TEST_F(StoreTest, SaveStore_Data_ReturnsValid) {
 }
 
 TEST_F(StoreTest, SaveStore_OpenWriteTempFails_ReturnsOpenErr) {
+    CreditCard card;
+    store_->AddCard(card);
+
     EXPECT_CALL(*mock_file_io_ptr_, OpenWriteTemp()).WillOnce(Return(-1));
     EXPECT_EQ(Store::SAVE_STORE_OPEN_ERR, store_->SaveStore());
 }
 
 TEST_F(StoreTest, SaveStore_WriteHeaderFails_ReturnsHeaderErr) {
+    CreditCard card;
+    store_->AddCard(card);
+
     EXPECT_CALL(*mock_file_io_ptr_, OpenWriteTemp()).WillOnce(Return(0));
     EXPECT_CALL(*mock_file_io_ptr_, GetPositionWriteTemp())
         .WillOnce(Return(-1)); // Invalid initial position for WriteHeader
