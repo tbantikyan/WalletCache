@@ -6,6 +6,7 @@
 #include "utils.hpp"
 #include "verification.hpp"
 
+#include <csignal>
 #include <cstring>
 #include <iostream>
 
@@ -212,26 +213,32 @@ auto HandleCardDelete(Store &store, const UI &ui) -> int {
     return 0;
 }
 
-auto main() -> int {
-    std::string store_path = GetStorePath();
-    if (store_path.empty()) {
-        std::cerr << "Failed to determine path for data file.\n";
-        return -1;
-    }
-
-    UI ui = UI();
-    auto sodium_crypto = std::make_shared<SodiumCrypto>();
-    auto fstream_fileio = std::make_unique<FStreamFileIO>(store_path);
-    Store store(sodium_crypto, std::move(fstream_fileio));
-
-    if (sodium_crypto->InitCrypto() == -1) {
-        std::cerr << "Failed to init crypto.\n";
-        return -1;
-    }
-
-    bool logged_in = false;
+void HandleSaveStore(Store &store) {
     std::string status_msg;
-    while (!logged_in) {
+
+    switch (store.SaveStore()) {
+    case Store::SAVE_STORE_VALID:
+        status_msg = "Cards saved succesfully!";
+        break;
+    case Store::SAVE_STORE_OPEN_ERR:
+        status_msg = "Faield to open file to save cards!";
+        break;
+    case Store::SAVE_STORE_HEADER_ERR:
+        status_msg = "Failed to write new header!";
+    case Store::SAVE_STORE_WRITE_DATA_ERR:
+        status_msg = "Failed to write new data!";
+        break;
+    case Store::SAVE_STORE_COMMIT_TEMP_ERR:
+        status_msg = "Failed to commit new data!";
+        break;
+    }
+
+    std::cout << status_msg << std::endl;
+}
+
+auto HandleLogin(Store &store, UI &ui, std::shared_ptr<SodiumCrypto> &sodium_crypto) -> int {
+    std::string status_msg;
+    while (true) {
         bool profile_exists = store.StoreExists(false);
 
         UI::StartMenuOption selection = ui.StartMenu(status_msg, profile_exists);
@@ -241,7 +248,7 @@ auto main() -> int {
 
         switch (selection) {
         case UI::OPT_START_EXIT:
-            return 0;
+            return -1;
         case UI::OPT_START_NEW_PROFILE:
             if (HandleNewProfile(store, ui, sodium_crypto, profile_exists) != 0) {
                 status_msg = "ERR: Failed to initialize store for new profile\n";
@@ -252,7 +259,7 @@ auto main() -> int {
         case UI::OPT_START_LOGIN:
             switch (HandleLogin(store, ui)) {
             case Store::LOAD_STORE_VALID:
-                logged_in = true;
+                return 0;
                 break;
             case Store::LOAD_STORE_OPEN_ERR:
                 status_msg = "ERR: Login failed. Unable to load data file.\n";
@@ -276,12 +283,52 @@ auto main() -> int {
             break;
         }
     }
+}
 
-    status_msg = "";
+volatile sig_atomic_t int_received = 0;
+void SigintHandler(int signum) { int_received = 1; }
+
+auto main() -> int {
+    std::string store_path = GetStorePath();
+    if (store_path.empty()) {
+        std::cerr << "Failed to determine path for data file.\n";
+        return -1;
+    }
+
+    UI ui = UI();
+    auto sodium_crypto = std::make_shared<SodiumCrypto>();
+    auto fstream_fileio = std::make_unique<FStreamFileIO>(store_path);
+    Store store(sodium_crypto, std::move(fstream_fileio));
+
+    if (sodium_crypto->InitCrypto() == -1) {
+        std::cerr << "Failed to init crypto.\n";
+        return -1;
+    }
+
+    if (HandleLogin(store, ui, sodium_crypto) != 0) {
+        return 0;
+    }
+
+    struct sigaction sa;
+    sa.sa_handler = SigintHandler;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_RESTART; 
+    if (sigaction(SIGINT, &sa, nullptr) == -1) {
+        perror("sigaction");
+        return -1;
+    }
+
+    std::string status_msg;
     while (true) {
+        if (int_received != 0) {
+            HandleSaveStore(store);
+            return 0;
+        }
+
         UI::ProfileMenuOption selection = ui.ProfileMenu(status_msg);
         switch (selection) {
         case UI::OPT_PROFILE_EXIT:
+            HandleSaveStore(store);
             return 0;
         case UI::OPT_PROFILE_LIST:
             HandleCardsList(store, ui);
@@ -290,24 +337,6 @@ auto main() -> int {
             if (HandleCardAdd(store, ui) != 0) {
                 continue;
             }
-
-            switch (store.SaveStore()) {
-            case Store::SAVE_STORE_VALID:
-                status_msg = "New card added successfully!\n";
-                break;
-            case Store::SAVE_STORE_OPEN_ERR:
-                status_msg = "Failed to open new file\n";
-                break;
-            case Store::SAVE_STORE_HEADER_ERR:
-                status_msg = "Failed to write new header!\n";
-            case Store::SAVE_STORE_WRITE_DATA_ERR:
-                status_msg = "Failed to write new data\n";
-                break;
-            case Store::SAVE_STORE_COMMIT_TEMP_ERR:
-                status_msg = "Failed to commit new data\n";
-                break;
-            }
-
             break;
         case UI::OPT_PROFILE_DEL:
             HandleCardDelete(store, ui);

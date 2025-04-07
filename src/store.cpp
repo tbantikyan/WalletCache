@@ -98,6 +98,10 @@ auto Store::LoadStore(unsigned char *password) -> Store::LoadStoreStatus {
 }
 
 auto Store::SaveStore() -> Store::SaveStoreStatus {
+    if (!this->dirty_) {
+        return SAVE_STORE_VALID;
+    }
+
     if (this->fileio_->OpenWriteTemp() != 0) {
         return SAVE_STORE_OPEN_ERR;
     }
@@ -125,11 +129,14 @@ auto Store::SaveStore() -> Store::SaveStoreStatus {
     return SAVE_STORE_VALID;
 }
 
-void Store::AddCard(const CreditCard &card) { this->cards_.emplace_back(card); }
+void Store::AddCard(const CreditCard &card) {
+    this->cards_.emplace_back(card);
+    this->dirty_ = true;
+}
 
 void Store::DeleteCard(uint32_t card_id) {
     this->cards_.erase(this->cards_.begin() + card_id);
-    this->SaveStore();
+    this->dirty_ = true;
 }
 
 auto Store::StoreExists(bool is_tmp) -> bool { return this->fileio_->GetExists(is_tmp); }

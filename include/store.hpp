@@ -47,7 +47,7 @@ class Store {
     auto DeleteStore(bool is_tmp) -> int;
 
     auto CardsDisplayList() const -> std::vector<std::pair<uint32_t, std::string>>;
-    auto GetCardById(uint32_t card_id) const -> const CreditCard&;
+    auto GetCardById(uint32_t card_id) const -> const CreditCard &;
 
   private:
     std::shared_ptr<ICrypto> crypto_;
@@ -57,6 +57,8 @@ class Store {
     std::unique_ptr<unsigned char[]> hashed_password_;
     std::unique_ptr<unsigned char[]> salt_;
     std::unique_ptr<unsigned char[]> encryption_key_;
+
+    bool dirty_;
 
     auto ReadHeader(unsigned char *hash, unsigned char *salt) -> int;
     auto ReadData(unsigned char *decrypted_data, uintmax_t data_size, uint64_t *decrypted_size_actual) -> int;
